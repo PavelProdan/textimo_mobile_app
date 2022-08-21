@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 // ignore_for_file: prefer_const_constructors
 
-
 void main() {
   runApp(const MyApp());
 }
@@ -52,28 +51,25 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-
       floatingActionButton: Padding(
         padding: const EdgeInsets.all(15.0),
         child: FloatingActionButton.extended(
-        elevation: 4.0,
-        backgroundColor: Color(0xFFD9D9D9),
-        label: Column(
-          children: const [
-            Text('Se vizualizeaza live:',
-            style: TextStyle(color: Colors.black,fontWeight: FontWeight.w400)
-            ),
-            Text('The current song name',
-            style: TextStyle(color: Colors.black,fontWeight: FontWeight.w800)
-            ),
-          ],
+          elevation: 4.0,
+          backgroundColor: Color(0xFFD9D9D9),
+          label: Column(
+            children: const [
+              Text('Se vizualizeaza live:',
+                  style: TextStyle(
+                      color: Colors.black, fontWeight: FontWeight.w400)),
+              Text('The current song name',
+                  style: TextStyle(
+                      color: Colors.black, fontWeight: FontWeight.w800)),
+            ],
+          ),
+          onPressed: () {},
         ),
-        onPressed: () {},
-    ),
       ),
-    floatingActionButtonLocation: 
-      FloatingActionButtonLocation.centerDocked,
-
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       drawer: drawer(),
       body: const Center(
         child: Text(
