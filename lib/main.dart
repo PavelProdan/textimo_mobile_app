@@ -71,12 +71,43 @@ class _HomePageState extends State<HomePage> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       drawer: drawer(),
-      body: const Center(
-        child: Text(
-          'This is the home page',
-          style: TextStyle(fontSize: 24),
-        ),
-      ),
+      body: ListView.builder(
+          itemCount: 20,
+          itemBuilder: (BuildContext context, int index) {
+            return Card(
+              child: ListTile(
+                title: InkWell(
+                  onTap: () {},
+                  child: Padding(
+                    padding: const EdgeInsets.all(13.0),
+                    child: Text("Example song number number $index"),
+                  ),
+                ),
+                trailing: PopupMenuButton<String>(
+                  onSelected: (String value) {},
+                  itemBuilder: (BuildContext context) =>
+                      <PopupMenuEntry<String>>[
+                    const PopupMenuItem<String>(
+                      value: 'Afiseaza',
+                      child: Text('Afișează'),
+                    ),
+                    const PopupMenuItem<String>(
+                      value: 'Previzualizeaza',
+                      child: Text('Previzualizează'),
+                    ),
+                    const PopupMenuItem<String>(
+                      value: 'Modifica',
+                      child: Text('Modifică'),
+                    ),
+                    const PopupMenuItem<String>(
+                      value: 'Sterge',
+                      child: Text('Șterge'),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }),
     );
   }
 
