@@ -34,7 +34,8 @@ class _HomePageState extends State<HomePage> {
           IconButton(
             icon: const Icon(Icons.search),
             tooltip: 'Search a song',
-            onPressed: () {},
+            onPressed: () => showDialogTest(context),
+
           ),
         ],
       ),
@@ -97,4 +98,71 @@ class _HomePageState extends State<HomePage> {
           }),
     );
   }
+}
+
+class MyStepperWidget extends StatefulWidget {
+  const MyStepperWidget({Key? key}) : super(key: key);
+
+  @override
+  State<MyStepperWidget> createState() => _MyStepperWidgetState();
+}
+
+class _MyStepperWidgetState extends State<MyStepperWidget> {
+  int _index = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stepper(
+      currentStep: _index,
+      onStepCancel: () {
+        //Navigator.of(context).pop(false);
+        if (_index > 0) {
+          setState(() {
+            _index -= 1;
+          });
+        }
+      },
+      onStepContinue: () {
+        if (_index <= 0) {
+          setState(() {
+            _index += 1;
+          });
+        }
+      },
+      onStepTapped: (int index) {
+        setState(() {
+          _index = index;
+        });
+      },
+      steps: <Step>[
+        Step(
+          title: const Text('Step 1 title'),
+          content: Container(
+              alignment: Alignment.centerLeft,
+              child: const Text('Content for Step 1')),
+        ),
+        const Step(
+          title: Text('Step 2 title'),
+          content: Text('Content for Step 2'),
+        ),
+      ],
+    );
+  }
+}
+
+// create a method showDialogTest that will show a dialog box that contains MyStepperWidget
+// wrap the stepper class in a Scaffold and SizedBox widget and add it to the body of the showDialogTest method
+
+void showDialogTest(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return Scaffold(
+        body: SizedBox(
+          width: double.infinity,
+          child: MyStepperWidget(),
+        ),
+      );
+    },
+  );
 }
