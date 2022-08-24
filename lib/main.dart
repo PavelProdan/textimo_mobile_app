@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:textimo_mobile_app/views/homeAPI.dart';
 import 'package:textimo_mobile_app/views/home_page.dart';
 // ignore_for_file: prefer_const_constructors
 
@@ -12,7 +13,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: HomePage(),
+      //home: HomePage(),
+      home: homeAPI(),
     );
   }
 }
