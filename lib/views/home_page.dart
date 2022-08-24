@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:textimo_mobile_app/components/drawer_menu.dart';
+import 'package:textimo_mobile_app/views/connection_guide.dart';
 // ignore_for_file: prefer_const_constructors
+
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -9,8 +11,8 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-
 class _HomePageState extends State<HomePage> {
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,7 +36,13 @@ class _HomePageState extends State<HomePage> {
           IconButton(
             icon: const Icon(Icons.search),
             tooltip: 'Search a song',
-            onPressed: () {} //showDialogTest(context),
+            onPressed: () {
+              // open the connection guide page
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ConnectionGuide()),
+              );
+            } //showDialogTest(context),
 
           ),
         ],
