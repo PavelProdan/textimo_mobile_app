@@ -13,3 +13,12 @@ class GetPostsService{
     
   }
 }
+
+
+// http.get(Uri.parse('url')).timeout(
+//   const Duration(seconds: 1),
+//   onTimeout: () {
+//     // Time has run out, do what you wanted to do.
+//     return http.Response('Error', 408); // Request Timeout response status code
+//   },
+// );
