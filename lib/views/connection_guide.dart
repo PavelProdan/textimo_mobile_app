@@ -62,8 +62,8 @@ class _StepperWidgetState extends State<StepperWidget> {
         if (_index <= 0) {
           setState(() {
             _index += 1;
-            showBackButton = true;
-            textButonNext = "Next";
+            showBackButton = false;
+            textButonNext = "M-am conectat la reteaua Textimo";
           });
         }
       },
@@ -82,9 +82,32 @@ class _StepperWidgetState extends State<StepperWidget> {
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               )),
         ),
-        const Step(
-          title: Text('Step 2 title'),
-          content: Text('Content for Step 2'),
+        Step(
+          title: const Text('Pasul 2'),
+          content: Container(
+              alignment: Alignment.centerLeft,
+              child: ListView(
+                scrollDirection: Axis.vertical,
+                 shrinkWrap: true,
+                  // ignore: prefer_const_literals_to_create_immutables
+                  children: <Widget>[
+                    // ignore: prefer_const_constructors
+                    Text(
+                      '2) Conecteaza-te la reteaua WiFi "textimo"',
+                      style:
+                          // ignore: prefer_const_constructors
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                    ),
+                    // ignore: prefer_const_constructors
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: const Text(
+                        'Reteaua WiFi "textimo" nu apare? Verifica daca dispozitivul RaspberryPi este pornit de cel putin 1 minut.',
+                        style:
+                            TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ])),
         ),
       ],
     );
