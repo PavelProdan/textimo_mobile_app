@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:network_info_plus/network_info_plus.dart';
+import 'package:textimo_mobile_app/main.dart';
+import 'package:textimo_mobile_app/views/check_connection.dart';
 
 class StepperWidget extends StatefulWidget {
   const StepperWidget({Key? key}) : super(key: key);
@@ -13,6 +16,8 @@ class _StepperWidgetState extends State<StepperWidget> {
   String textButonNext = 'Am dezactivat Datele Mobile';
   String textButonBack = 'Inapoi';
   var showBackButton = false;
+  var showNextButton = true;
+  var showsubmitButton = false;
 
   @override
   Widget build(BuildContext context) {
@@ -20,19 +25,22 @@ class _StepperWidgetState extends State<StepperWidget> {
       controlsBuilder: (context, _) {
         return Row(
           children: <Widget>[
-            TextButton(
-              onPressed: _.onStepContinue,
-              child: Padding(
-                padding: const EdgeInsets.all(3.0),
-                child: Text(
-                  textButonNext,
-                  style: TextStyle(color: Colors.white, fontSize: 19),
+            Visibility(
+              visible: showNextButton,
+              child: TextButton(
+                onPressed: _.onStepContinue,
+                child: Padding(
+                  padding: const EdgeInsets.all(3.0),
+                  child: Text(
+                    textButonNext,
+                    style: TextStyle(color: Colors.white, fontSize: 19),
+                  ),
                 ),
-              ),
-              style: TextButton.styleFrom(
-                primary: Colors.white,
-                backgroundColor: Colors.teal,
-                onSurface: Colors.grey,
+                style: TextButton.styleFrom(
+                  primary: Colors.white,
+                  backgroundColor: Colors.teal,
+                  onSurface: Colors.grey,
+                ),
               ),
             ),
             Visibility(
@@ -54,6 +62,7 @@ class _StepperWidgetState extends State<StepperWidget> {
           setState(() {
             _index -= 1;
             showBackButton = false;
+            showNextButton = true;
             textButonNext = "Am dezactivat Datele Mobile";
           });
         }
@@ -63,14 +72,9 @@ class _StepperWidgetState extends State<StepperWidget> {
           setState(() {
             _index += 1;
             showBackButton = false;
-            textButonNext = "M-am conectat la reteaua Textimo";
+            showNextButton = false;
           });
         }
-      },
-      onStepTapped: (int index) {
-        setState(() {
-          _index = index;
-        });
       },
       steps: <Step>[
         Step(
@@ -86,9 +90,7 @@ class _StepperWidgetState extends State<StepperWidget> {
           title: const Text('Pasul 2'),
           content: Container(
               alignment: Alignment.centerLeft,
-              child: ListView(
-                scrollDirection: Axis.vertical,
-                 shrinkWrap: true,
+              child: ListView(scrollDirection: Axis.vertical, shrinkWrap: true,
                   // ignore: prefer_const_literals_to_create_immutables
                   children: <Widget>[
                     // ignore: prefer_const_constructors
@@ -103,8 +105,28 @@ class _StepperWidgetState extends State<StepperWidget> {
                       padding: const EdgeInsets.all(8.0),
                       child: const Text(
                         'Reteaua WiFi "textimo" nu apare? Verifica daca dispozitivul RaspberryPi este pornit de cel putin 1 minut.',
-                        style:
-                            TextStyle(fontSize: 16),
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+
+                    TextButton(
+                      onPressed: () {
+                        Get.offAll(CheckConnectionWidget());
+                      },
+                      // ignore: sort_child_properties_last
+                      // ignore: prefer_const_constructors
+                      child: Padding(
+                        padding: const EdgeInsets.all(3.0),
+                        // ignore: prefer_const_constructors
+                        child: Text(
+                          "M-am conectat",
+                          style: TextStyle(color: Colors.white, fontSize: 19),
+                        ),
+                      ),
+                      style: TextButton.styleFrom(
+                        primary: Colors.white,
+                        backgroundColor: Colors.teal,
+                        onSurface: Colors.grey,
                       ),
                     ),
                   ])),
@@ -139,26 +161,18 @@ class _ConnectionGuideState extends State<ConnectionGuide> {
           mainAxisSize: MainAxisSize.min,
           // ignore: prefer_const_literals_to_create_immutables
           children: <Widget>[
-            const StepperWidget(),
-            TextButton(
-              style: ButtonStyle(
-                foregroundColor: MaterialStateProperty.all<Color>(Colors.blue),
-                overlayColor: MaterialStateProperty.resolveWith<Color?>(
-                  (Set<MaterialState> states) {
-                    if (states.contains(MaterialState.hovered))
-                      return Colors.blue.withOpacity(0.04);
-                    if (states.contains(MaterialState.focused) ||
-                        states.contains(MaterialState.pressed))
-                      return Colors.blue.withOpacity(0.12);
-                    return null; // Defer to the widget's default.
-                  },
-                ),
+            // ignore: prefer_const_constructors
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                'Se pare ca nu esti conectat la dispozitivul Textimo. Te rugam sa urmeazi pasii de mai jos pentru a te conecta.',
+                style:
+                    // ignore: prefer_const_constructors
+                    TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Center(child: Text("M-am conectat")),
-            )
+            ),
+
+            const StepperWidget(),
           ],
         ),
       ),

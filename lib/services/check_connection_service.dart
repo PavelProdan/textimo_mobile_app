@@ -18,7 +18,7 @@ class CheckConnectionService {
         return "false";
       }
     } on SocketException {
-      return "exception raised";
+      return "false";
     }
 
   }
