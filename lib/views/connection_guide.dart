@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:network_info_plus/network_info_plus.dart';
 import 'package:textimo_mobile_app/main.dart';
 import 'package:textimo_mobile_app/views/check_connection.dart';
 
