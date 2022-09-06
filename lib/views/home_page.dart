@@ -37,11 +37,7 @@ class _HomePageState extends State<HomePage> {
             icon: const Icon(Icons.search),
             tooltip: 'Search a song',
             onPressed: () {
-              // open the connection guide page
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ConnectionGuide()),
-              );
+              
             } //showDialogTest(context),
 
           ),

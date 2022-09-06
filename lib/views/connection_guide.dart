@@ -172,6 +172,17 @@ class _ConnectionGuideState extends State<ConnectionGuide> {
             ),
 
             const StepperWidget(),
+
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                'Atentie! Este posibil sa primesti un mesaj de tipul "Acest WiFi nu are acces la internet". Este important sa pastrezi conexiunea cu WiFi-ul Textimo pentru a putea folosi aplicatia.',
+                style:
+                    // ignore: prefer_const_constructors
+                    TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+            ),
+
           ],
         ),
       ),
