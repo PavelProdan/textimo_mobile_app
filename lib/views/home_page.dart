@@ -3,6 +3,8 @@ import 'package:textimo_mobile_app/components/drawer_menu.dart';
 import 'package:textimo_mobile_app/views/connection_guide.dart';
 // ignore_for_file: prefer_const_constructors
 
+import '../models/song.dart';
+import '../services/get_songs_service.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -12,7 +14,25 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  
+  List<Song>? songs;
+  var songsLoaded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    //fetch data from API
+    getSongs();
+  }
+
+  getSongs() async {
+    songs = await GetSongsService().getSongs();
+    if (songs != null) {
+      setState(() {
+        songsLoaded = true;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,13 +54,11 @@ class _HomePageState extends State<HomePage> {
         ),
         actions: <Widget>[
           IconButton(
-            icon: const Icon(Icons.search),
-            tooltip: 'Search a song',
-            onPressed: () {
-              
-            } //showDialogTest(context),
+              icon: const Icon(Icons.search),
+              tooltip: 'Search a song',
+              onPressed: () {} //showDialogTest(context),
 
-          ),
+              ),
         ],
       ),
       floatingActionButton: Padding(
@@ -63,44 +81,50 @@ class _HomePageState extends State<HomePage> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       drawer: drawer_menu(),
-      body: ListView.builder(
-          itemCount: 20,
-          itemBuilder: (BuildContext context, int index) {
-            return Card(
-              child: ListTile(
-                title: InkWell(
-                  onTap: () {},
-                  child: Padding(
-                    padding: const EdgeInsets.all(13.0),
-                    child: Text("Example song number number $index"),
+      body: Visibility(
+        visible: songsLoaded,
+        // ignore: sort_child_properties_last
+        child: ListView.builder(
+            itemCount: songs?.length,
+            itemBuilder: (BuildContext context, int index) {
+              return Card(
+                child: ListTile(
+                  title: InkWell(
+                    onTap: () {},
+                    child: Padding(
+                      padding: const EdgeInsets.all(13.0),
+                      child: Text(songs![index].songTitle),
+                    ),
+                  ),
+                  trailing: PopupMenuButton<String>(
+                    onSelected: (String value) {},
+                    itemBuilder: (BuildContext context) =>
+                        <PopupMenuEntry<String>>[
+                      const PopupMenuItem<String>(
+                        value: 'Afiseaza',
+                        child: Text('Afișează'),
+                      ),
+                      const PopupMenuItem<String>(
+                        value: 'Previzualizeaza',
+                        child: Text('Previzualizează'),
+                      ),
+                      const PopupMenuItem<String>(
+                        value: 'Modifica',
+                        child: Text('Modifică'),
+                      ),
+                      const PopupMenuItem<String>(
+                        value: 'Sterge',
+                        child: Text('Șterge'),
+                      ),
+                    ],
                   ),
                 ),
-                trailing: PopupMenuButton<String>(
-                  onSelected: (String value) {},
-                  itemBuilder: (BuildContext context) =>
-                      <PopupMenuEntry<String>>[
-                    const PopupMenuItem<String>(
-                      value: 'Afiseaza',
-                      child: Text('Afișează'),
-                    ),
-                    const PopupMenuItem<String>(
-                      value: 'Previzualizeaza',
-                      child: Text('Previzualizează'),
-                    ),
-                    const PopupMenuItem<String>(
-                      value: 'Modifica',
-                      child: Text('Modifică'),
-                    ),
-                    const PopupMenuItem<String>(
-                      value: 'Sterge',
-                      child: Text('Șterge'),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }),
+              );
+            }),
+        replacement: const Center(
+          child: CircularProgressIndicator(),
+        ),
+      ),
     );
   }
 }
-
