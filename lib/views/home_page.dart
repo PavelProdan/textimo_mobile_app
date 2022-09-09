@@ -5,6 +5,9 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 // ignore_for_file: prefer_const_constructors
 
+//https://github.com/themaaz32/infinite_list_pagination/blob/main/lib/main.dart
+//https://www.youtube.com/watch?v=KcRtURq-Ww8&ab_channel=EasyApproach
+
 import '../models/song.dart';
 import '../services/get_songs_service.dart';
 
