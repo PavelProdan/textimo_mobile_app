@@ -31,7 +31,7 @@ class _HomePageState extends State<HomePage> {
     _isLastPage = false;
     _loading = true;
     _error = false;
-    //fetchData();
+    // fetchData();
   }
 
   Future<void> fetchData() async {
@@ -46,6 +46,7 @@ class _HomePageState extends State<HomePage> {
         _loading = false;
         _pageNumber = _pageNumber + 1;
         _posts.addAll(postList);
+
       });
     } catch (e) {
       print("error --> $e");
