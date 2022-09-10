@@ -17,7 +17,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<Song> songs = [];
-  int limit = 4; // this variable never changes, its part of config
+  int limit = 10; // this variable never changes, its part of config
   int offset = 0;
   final RefreshController refreshController =
       RefreshController(initialRefresh: true);
