@@ -3,6 +3,8 @@ import 'package:textimo_mobile_app/components/drawer_menu.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:textimo_mobile_app/services/get_now_playing_song_service.dart';
 import 'package:textimo_mobile_app/models/now_playing_model.dart';
+import 'package:textimo_mobile_app/models/song_single.dart';
+import 'package:textimo_mobile_app/services/get_details_song_service.dart';
 
 // ignore_for_file: prefer_const_constructors
 
@@ -19,6 +21,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List<Song> songs = [];
   NowPlayingSong? nowPlayingSong;
+  SongSingle? nowPlayingSongInfo;
+  String now_playing_song_title = '';
 
   int limit = 10; // this variable never changes, its part of config
   int offset = 0;
@@ -40,10 +44,13 @@ class _HomePageState extends State<HomePage> {
           is_now_playing_btn_visible = false;
         });
       }else{
-        setState(() {
-          is_now_playing_btn_visible = true;
-        });
-
+        nowPlayingSongInfo = await GetSongInfo().getSongInfo(nowPlayingSong!.songId);
+        if(nowPlayingSongInfo != null){
+          setState(() {
+            now_playing_song_title = nowPlayingSongInfo!.songTitle;
+            is_now_playing_btn_visible = true;
+          });
+        }
       }
       
     }
@@ -112,11 +119,11 @@ class _HomePageState extends State<HomePage> {
             elevation: 4.0,
             backgroundColor: Color(0xFFD9D9D9),
             label: Column(
-              children: const [
+              children: [
                 Text('Se vizualizeaza live:',
                     style: TextStyle(
                         color: Colors.black, fontWeight: FontWeight.w400)),
-                Text('The current song name',
+                Text(now_playing_song_title,
                     style: TextStyle(
                         color: Colors.black, fontWeight: FontWeight.w800)),
               ],
