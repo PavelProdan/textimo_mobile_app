@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:textimo_mobile_app/components/drawer_menu.dart';
-import 'package:textimo_mobile_app/views/connection_guide.dart';
+//import 'package:textimo_mobile_app/views/connection_guide.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 // ignore_for_file: prefer_const_constructors
@@ -17,8 +17,33 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<Song> songs = [];
-  final RefreshController refreshController = RefreshController(initialRefresh: true);
+  int limit = 4; // this variable never changes, its part of config
+  int offset = 0;
+  final RefreshController refreshController =
+      RefreshController(initialRefresh: true);
 
+  Future<bool> retrieveSongs({bool isRefresh = false}) async {
+    if (isRefresh) {
+      offset = 0;
+    }
+
+    final response = await GetSongsService().getSongswithPagination(limit, offset);
+
+    if (response != null) {
+        if (isRefresh) {
+          songs = response;
+        } else {
+          songs.addAll(response);
+        }
+        offset = offset + limit;
+     
+      setState(() {});
+      return true;
+      
+    } else {
+      return false;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,9 +96,26 @@ class _HomePageState extends State<HomePage> {
       body: SmartRefresher(
         controller: refreshController,
         enablePullUp: true,
+        onRefresh: () async {
+          final result = await retrieveSongs(isRefresh: true);
+          if(result){
+            refreshController.refreshCompleted();
+          }else{
+            refreshController.refreshFailed();
+          }
+        },
+        onLoading: () async {
+          final result = await retrieveSongs();
+          if(result){
+            refreshController.loadComplete();
+          }else{
+            refreshController.loadFailed();
+          }
+        },
         child: ListView.builder(
             itemCount: songs.length,
             itemBuilder: (BuildContext context, int index) {
+              
               return Card(
                 child: ListTile(
                   title: InkWell(
@@ -112,6 +154,3 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
-
-
-  

@@ -25,11 +25,16 @@ class _HomePageState extends State<HomePage> {
   }
 
   getSongs() async {
-    songs = await GetSongsService().getSongs();
+    songs = await GetSongsService().getSongswithPagination(3,20);
     if (songs != null) {
+      if(songs!.isEmpty){
+        print("e gol");
+      }
       setState(() {
         songsLoaded = true;
       });
+    }else{
+      print("i expected this");
     }
   }
 
