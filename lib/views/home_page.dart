@@ -5,9 +5,6 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 // ignore_for_file: prefer_const_constructors
 
-//https://github.com/themaaz32/infinite_list_pagination/blob/main/lib/main.dart
-//https://www.youtube.com/watch?v=KcRtURq-Ww8&ab_channel=EasyApproach
-
 import '../models/song.dart';
 import '../services/get_songs_service.dart';
 
@@ -19,15 +16,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  List<Song> songs = [];
+  final RefreshController refreshController = RefreshController(initialRefresh: true);
 
-  // getSongs() async {
-  //   songs = await GetSongsService().getSongs();
-  //   if (songs != null) {
-  //     setState(() {
-  //       songsLoaded = true;
-  //     });
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -77,11 +68,11 @@ class _HomePageState extends State<HomePage> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       drawer: drawer_menu(),
-      body: Visibility(
-        visible: true,
-        // ignore: sort_child_properties_last
+      body: SmartRefresher(
+        controller: refreshController,
+        enablePullUp: true,
         child: ListView.builder(
-            itemCount: songs?.length,
+            itemCount: songs.length,
             itemBuilder: (BuildContext context, int index) {
               return Card(
                 child: ListTile(
@@ -89,7 +80,7 @@ class _HomePageState extends State<HomePage> {
                     onTap: () {},
                     child: Padding(
                       padding: const EdgeInsets.all(13.0),
-                      child: Text(songs![index].songTitle),
+                      child: Text(songs[index].songTitle),
                     ),
                   ),
                   trailing: PopupMenuButton<String>(
@@ -117,9 +108,6 @@ class _HomePageState extends State<HomePage> {
                 ),
               );
             }),
-        replacement: const Center(
-          child: CircularProgressIndicator(),
-        ),
       ),
     );
   }
