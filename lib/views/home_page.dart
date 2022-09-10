@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:textimo_mobile_app/components/drawer_menu.dart';
-//import 'package:textimo_mobile_app/views/connection_guide.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:textimo_mobile_app/services/get_now_playing_song_service.dart';
+import 'package:textimo_mobile_app/models/now_playing_model.dart';
 
 // ignore_for_file: prefer_const_constructors
 
@@ -17,8 +18,38 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<Song> songs = [];
+  NowPlayingSong? nowPlayingSong;
+
   int limit = 10; // this variable never changes, its part of config
   int offset = 0;
+  bool is_now_playing_btn_visible = false;
+
+  @override
+  void initState() {
+    super.initState();
+    
+    // get now playing song btn
+    getNowPlayingSong();
+  }
+
+  getNowPlayingSong() async {
+    nowPlayingSong =  await GetNowPlayingSong().getNowPlayingSong();
+    if(nowPlayingSong != null){
+      if(nowPlayingSong?.songId == "0"){
+        setState(() {
+          is_now_playing_btn_visible = false;
+        });
+      }else{
+        setState(() {
+          is_now_playing_btn_visible = true;
+        });
+
+      }
+      
+    }
+
+  }
+
   final RefreshController refreshController =
       RefreshController(initialRefresh: true);
 
@@ -73,22 +104,25 @@ class _HomePageState extends State<HomePage> {
               ),
         ],
       ),
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.all(15.0),
-        child: FloatingActionButton.extended(
-          elevation: 4.0,
-          backgroundColor: Color(0xFFD9D9D9),
-          label: Column(
-            children: const [
-              Text('Se vizualizeaza live:',
-                  style: TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.w400)),
-              Text('The current song name',
-                  style: TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.w800)),
-            ],
+      floatingActionButton: Visibility(
+        visible: is_now_playing_btn_visible,
+        child: Padding(
+          padding: const EdgeInsets.all(15.0),
+          child: FloatingActionButton.extended(
+            elevation: 4.0,
+            backgroundColor: Color(0xFFD9D9D9),
+            label: Column(
+              children: const [
+                Text('Se vizualizeaza live:',
+                    style: TextStyle(
+                        color: Colors.black, fontWeight: FontWeight.w400)),
+                Text('The current song name',
+                    style: TextStyle(
+                        color: Colors.black, fontWeight: FontWeight.w800)),
+              ],
+            ),
+            onPressed: () {},
           ),
-          onPressed: () {},
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -98,6 +132,7 @@ class _HomePageState extends State<HomePage> {
         enablePullUp: true,
         onRefresh: () async {
           final result = await retrieveSongs(isRefresh: true);
+          getNowPlayingSong();
           if(result){
             refreshController.refreshCompleted();
           }else{
