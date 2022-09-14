@@ -161,14 +161,20 @@ class _HomePageState extends State<HomePage> {
               return Card(
                 child: ListTile(
                   title: InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      // open song projector page
+                    },
                     child: Padding(
                       padding: const EdgeInsets.all(13.0),
                       child: Text(songs[index].songTitle),
                     ),
                   ),
                   trailing: PopupMenuButton<String>(
-                    onSelected: (String value) {},
+                    onSelected: (String value) {
+                      setState(() {
+                        //_selectedMenu = item.name;
+                      });
+                    },
                     itemBuilder: (BuildContext context) =>
                         <PopupMenuEntry<String>>[
                       const PopupMenuItem<String>(
