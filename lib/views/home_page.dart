@@ -13,11 +13,6 @@ import 'package:get/get.dart';
 import '../models/song.dart';
 import '../services/get_songs_service.dart';
 
-class Data {
-  String? song_id;
-  int? verse_number;
-  Data({this.song_id, this.verse_number});
-}
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -27,11 +22,13 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  
+
   List<Song> songs = [];
   NowPlayingSong? nowPlayingSong;
   SongSingle? nowPlayingSongInfo;
   String now_playing_song_title = '';
+  String now_playing_songId = '';
+  String now_playing_song_verse_number = '';
 
   int limit = 10; // this variable never changes, its part of config
   int offset = 0;
@@ -40,30 +37,31 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    
+
     // get now playing song btn
     getNowPlayingSong();
   }
 
   getNowPlayingSong() async {
-    nowPlayingSong =  await GetNowPlayingSong().getNowPlayingSong();
-    if(nowPlayingSong != null){
-      if(nowPlayingSong?.songId == "0"){
+    nowPlayingSong = await GetNowPlayingSong().getNowPlayingSong();
+    if (nowPlayingSong != null) {
+      if (nowPlayingSong?.songId == "0") {
         setState(() {
           is_now_playing_btn_visible = false;
         });
-      }else{
-        nowPlayingSongInfo = await GetSongInfo().getSongInfo(nowPlayingSong!.songId);
-        if(nowPlayingSongInfo != null){
+      } else {
+        nowPlayingSongInfo =
+            await GetSongInfo().getSongInfo(nowPlayingSong!.songId);
+        if (nowPlayingSongInfo != null) {
           setState(() {
             now_playing_song_title = nowPlayingSongInfo!.songTitle;
+            now_playing_song_verse_number = nowPlayingSong!.verseNumber;
+            now_playing_songId = nowPlayingSong!.songId;
             is_now_playing_btn_visible = true;
           });
         }
       }
-      
     }
-
   }
 
   final RefreshController refreshController =
@@ -74,19 +72,19 @@ class _HomePageState extends State<HomePage> {
       offset = 0;
     }
 
-    final response = await GetSongsService().getSongswithPagination(limit, offset);
+    final response =
+        await GetSongsService().getSongswithPagination(limit, offset);
 
     if (response != null) {
-        if (isRefresh) {
-          songs = response;
-        } else {
-          songs.addAll(response);
-        }
-        offset = offset + limit;
-     
+      if (isRefresh) {
+        songs = response;
+      } else {
+        songs.addAll(response);
+      }
+      offset = offset + limit;
+
       setState(() {});
       return true;
-      
     } else {
       return false;
     }
@@ -149,33 +147,45 @@ class _HomePageState extends State<HomePage> {
         onRefresh: () async {
           final result = await retrieveSongs(isRefresh: true);
           getNowPlayingSong();
-          if(result){
+          if (result) {
             refreshController.refreshCompleted();
-          }else{
+          } else {
             refreshController.refreshFailed();
           }
         },
         onLoading: () async {
           final result = await retrieveSongs();
-          if(result){
+          if (result) {
             refreshController.loadComplete();
-          }else{
+          } else {
             refreshController.loadFailed();
           }
         },
         child: ListView.builder(
             itemCount: songs.length,
             itemBuilder: (BuildContext context, int index) {
-              
               return Card(
                 child: ListTile(
                   title: InkWell(
-                    onTap: () {
+                    onTap: () async {
+
+                      String local_verse_number="1";
+                      if(is_now_playing_btn_visible){
+                        if(now_playing_songId == songs[index].id){
+                          local_verse_number = now_playing_song_verse_number;
+                        }
+                      }
+                      
                       // open song projector page
-                      Get.to(() => ProjectorWidget(), arguments: [
-                          {"song_id": songs[index].id},
-                          {"verse_number": 0}
+                      var data = await Get.to(() => ProjectorWidget(), arguments: [
+                        {"song_id": songs[index].id},
+                        {"verse_number": local_verse_number}
                       ]);
+
+                      if(data=="require_refresh"){
+                        getNowPlayingSong();
+
+                      }
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(13.0),
