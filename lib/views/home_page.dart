@@ -5,11 +5,19 @@ import 'package:textimo_mobile_app/services/get_now_playing_song_service.dart';
 import 'package:textimo_mobile_app/models/now_playing_model.dart';
 import 'package:textimo_mobile_app/models/song_single.dart';
 import 'package:textimo_mobile_app/services/get_details_song_service.dart';
+import 'package:textimo_mobile_app/views/projector.dart';
+import 'package:get/get.dart';
 
 // ignore_for_file: prefer_const_constructors
 
 import '../models/song.dart';
 import '../services/get_songs_service.dart';
+
+class Data {
+  String? song_id;
+  int? verse_number;
+  Data({this.song_id, this.verse_number});
+}
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -19,6 +27,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  
   List<Song> songs = [];
   NowPlayingSong? nowPlayingSong;
   SongSingle? nowPlayingSongInfo;
@@ -163,6 +172,10 @@ class _HomePageState extends State<HomePage> {
                   title: InkWell(
                     onTap: () {
                       // open song projector page
+                      Get.to(() => ProjectorWidget(), arguments: [
+                          {"song_id": songs[index].id},
+                          {"verse_number": 0}
+                      ]);
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(13.0),
