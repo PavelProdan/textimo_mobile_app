@@ -135,7 +135,18 @@ class _HomePageState extends State<HomePage> {
                         color: Colors.black, fontWeight: FontWeight.w800)),
               ],
             ),
-            onPressed: () {},
+            onPressed: () async {
+              // open song projector page
+                      var data = await Get.to(() => ProjectorWidget(), arguments: [
+                        {"song_id": now_playing_songId},
+                        {"verse_number": now_playing_song_verse_number}
+                      ]);
+
+                      if(data=="require_refresh"){
+                        getNowPlayingSong();
+
+                      }
+            },
           ),
         ),
       ),
