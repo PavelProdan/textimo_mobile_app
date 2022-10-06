@@ -16,7 +16,7 @@ class SongSingle {
     });
 
     String songTitle;
-    int totalNumLyrics;
+    String totalNumLyrics;
     String id;
 
     factory SongSingle.fromJson(Map<String, dynamic> json) => SongSingle(

@@ -10,7 +10,9 @@ class GetSongInfo{
     var response = await client.get(uri);
     if (response.statusCode == 200) {
       var json = response.body;
-      return songSingleFromJson(json);
+      if(json.isNotEmpty){
+        return songSingleFromJson(json);
+      }
     } else {
       return null;
     }
