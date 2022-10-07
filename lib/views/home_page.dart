@@ -7,9 +7,6 @@ import 'package:textimo_mobile_app/models/song_single.dart';
 import 'package:textimo_mobile_app/services/get_details_song_service.dart';
 import 'package:textimo_mobile_app/views/projector.dart';
 import 'package:get/get.dart';
-
-// ignore_for_file: prefer_const_constructors
-
 import '../models/song.dart';
 import '../services/get_songs_service.dart';
 

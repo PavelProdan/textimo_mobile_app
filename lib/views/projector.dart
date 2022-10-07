@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:textimo_mobile_app/views/home_page.dart';
+import 'package:textimo_mobile_app/models/song_single.dart';
+import 'package:textimo_mobile_app/services/get_details_song_service.dart';
 
 class ProjectorController extends GetxController {
   dynamic argumentData = Get.arguments;
@@ -17,6 +19,25 @@ class ProjectorWidget extends StatefulWidget {
 
 class _ProjectorWidgetState extends State<ProjectorWidget> {
   final ProjectorController controller = Get.put(ProjectorController());
+
+  SongSingle? nowPlayingSongDetails;
+  bool isLoaded = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    getNowPlayingSongInfo();
+  }
+
+  getNowPlayingSongInfo() async {
+    nowPlayingSongDetails = await GetSongInfo().getSongInfo(controller.songId!);
+    if (nowPlayingSongDetails != null) {
+      setState(() {
+        isLoaded = true;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,42 +62,41 @@ class _ProjectorWidgetState extends State<ProjectorWidget> {
                   ),
             ],
           ),
-          // body: Center(
-          //   child: Text("Now playing song with id: ${controller.songId} and verse number: ${controller.verseNumber}"),
-          // ),
-          // ignore: prefer_const_constructors
-
-          // add body that contains a centered title and a text aligned to the left
-          body: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Center(
-                  child: Text("now_playing_song_title",
+          
+          body: Visibility(
+            visible: isLoaded,
+            replacement: Center(child: CircularProgressIndicator()),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Center(
+                    child: Text(nowPlayingSongDetails?.songTitle ?? '',
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.w800,
+                            fontSize: 20)),
+                  ),
+                ),
+                SizedBox(height: 25),
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Text("Strofa curenta: ${controller.verseNumber} din ${nowPlayingSongDetails?.totalNumLyrics ?? ''}",
                       style: TextStyle(
                           color: Colors.black,
-                          fontWeight: FontWeight.w800,
-                          fontSize: 20)),
+                          fontWeight: FontWeight.w600,
+                          fontSize: 18)),
                 ),
-              ),
-              SizedBox(height: 25),
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Text("Strofa curenta: ${controller.verseNumber}/total",
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 18)),
-              ),
-              Container(
-                color: Color.fromARGB(255, 219, 219, 219),
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Text("jhfjdfhjhfdjdhfjhdf \nyfdjyfjdy")),
-              )
-            ],
+                Container(
+                  color: Color.fromARGB(255, 219, 219, 219),
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Text("jhfjdfhjhfdjdhfjhdf \nyfdjyfjdy")),
+                )
+              ],
+            ),
           )),
     );
   }
