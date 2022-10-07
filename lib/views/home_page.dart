@@ -124,7 +124,7 @@ class _HomePageState extends State<HomePage> {
             backgroundColor: Color(0xFFD9D9D9),
             label: Column(
               children: [
-                Text('Se vizualizeaza live:',
+                Text('Se vizualizează live:',
                     style: TextStyle(
                         color: Colors.black, fontWeight: FontWeight.w400)),
                 Text(now_playing_song_title,

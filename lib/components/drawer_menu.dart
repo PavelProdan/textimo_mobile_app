@@ -18,12 +18,12 @@ Drawer drawer_menu() {
           ),
           ListTile(
             leading: Icon(Icons.add_circle_outline),
-            title: Text('Adauga o piesa noua'),
+            title: Text('Adaugă o piesă nouă'),
             onTap: () {},
           ),
           ListTile(
             leading: Icon(Icons.settings),
-            title: Text('Setari'),
+            title: Text('Setări'),
             onTap: () {},
           ),
           ListTile(
@@ -33,7 +33,7 @@ Drawer drawer_menu() {
           ),
           ListTile(
             leading: Icon(Icons.report),
-            title: Text('Raportari'),
+            title: Text('Raportări'),
             onTap: () {},
           ),
           Divider(
@@ -42,7 +42,7 @@ Drawer drawer_menu() {
             color: Color(0XFFCECECE),
           ),
           ListTile(
-            title: Text('Versiune aplicatie: v1.0'),
+            title: Text('Versiune aplicație: v1.0'),
           ),
           Divider(
             height: 3,
@@ -50,7 +50,7 @@ Drawer drawer_menu() {
             color: Color(0XFFCECECE),
           ),
           ListTile(
-            title: Text('Aplicatie dezvoltata de Pavel Prodan in 2022'),
+            title: Text('Aplicație dezvoltată de Pavel Prodan în 2022'),
           ),
         ],
       ),
