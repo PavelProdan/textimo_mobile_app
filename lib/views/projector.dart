@@ -62,6 +62,14 @@ class _ProjectorWidgetState extends State<ProjectorWidget> {
     }
   }
 
+  projectToLivePage() async{
+
+  }
+
+  stopLivePlaying() async{
+
+  }
+
 
   @override
   Widget build(BuildContext context) {
