@@ -4,6 +4,8 @@ import 'package:textimo_mobile_app/views/home_page.dart';
 import 'package:textimo_mobile_app/models/song_single.dart';
 import 'package:textimo_mobile_app/services/get_details_song_service.dart';
 import 'package:textimo_mobile_app/services/preview_song_service.dart';
+import 'package:textimo_mobile_app/services/send_to_projector_service.dart';
+import 'package:textimo_mobile_app/services/stop_projector_service.dart';
 
 class ProjectorController extends GetxController {
   dynamic argumentData = Get.arguments;
@@ -26,6 +28,7 @@ class _ProjectorWidgetState extends State<ProjectorWidget> {
   bool isTextLoaded = false;
   bool isLastVerse = false;
   String? current_verse;
+  String? current_verse_withBr;
   String next_btn_content = 'Strofa următoare';
 
   @override
@@ -56,18 +59,31 @@ class _ProjectorWidgetState extends State<ProjectorWidget> {
     if(verseContent != null){
       setState(() {
         current_verse = verseContent[0].lyricsText;
-        current_verse = current_verse?.replaceAll("<br>", "\n");
+        current_verse_withBr = verseContent[0].lyricsText;
+        current_verse = current_verse!.replaceAll("<br>", "\n");
+        projectToLivePage(current_verse_withBr!);
         isTextLoaded = true;
       });
     }
   }
 
-  projectToLivePage() async{
+  projectToLivePage(String live_verse) async{
+    var sendToProjector = await SendToProjectorService().sendToProjector(live_verse, controller.songId!, controller.verseNumber!);
+    if(sendToProjector != null){
+      Get.snackbar("Info projector", "Projector is now live");
+    }else{
+      Get.snackbar("Info projector", "Projector is NOT live");
+    }
 
   }
 
   stopLivePlaying() async{
-
+    var stopProjector = await StopProjectorService().stopProjector();
+    if(stopProjector != null){
+      Get.snackbar("Info projector", "Projector is now stopped");
+    }else{
+      Get.snackbar("Info projector", "Projector is NOT stopped");
+    }
   }
 
 
@@ -77,7 +93,10 @@ class _ProjectorWidgetState extends State<ProjectorWidget> {
     return WillPopScope(
       onWillPop: () async {
         // get back and send a require_refresh parameter to the previous page with getx
-        Get.back(result: "require_refresh");
+        //Get.back(result: "require_refresh");
+        Get.offAll(() => HomePage(), arguments: [
+                        {"require_refresh"},
+                      ]);
         return true;
       },
       child: Scaffold(
@@ -89,7 +108,12 @@ class _ProjectorWidgetState extends State<ProjectorWidget> {
               IconButton(
                   icon: const Icon(Icons.hide_source),
                   tooltip: 'Opreste proiecția',
-                  onPressed: () {} //showDialogTest(context),
+                  onPressed: () {
+                    stopLivePlaying();
+                    Get.offAll(() => HomePage(), arguments: [
+                        {"require_refresh"},
+                      ]);
+                  } //showDialogTest(context),
 
                   ),
             ],
