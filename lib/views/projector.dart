@@ -30,7 +30,7 @@ class _ProjectorWidgetState extends State<ProjectorWidget> {
   String? current_verse;
   String? current_verse_withBr;
   String next_btn_content = 'Strofa următoare';
-  
+
 
   @override
   void initState() {
@@ -58,11 +58,12 @@ class _ProjectorWidgetState extends State<ProjectorWidget> {
   getVerseContent() async{
     var verseContent = await PreviewSongService().getPreviewSongInfo(controller.songId!, controller.verseNumber!);
     if(verseContent != null){
+      projectToLivePage(current_verse_withBr!);
+
       setState(() {
         current_verse = verseContent[0].lyricsText;
         current_verse_withBr = verseContent[0].lyricsText;
         current_verse = current_verse!.replaceAll("<br>", "\n");
-        projectToLivePage(current_verse_withBr!);
         isTextLoaded = true;
       });
     }
