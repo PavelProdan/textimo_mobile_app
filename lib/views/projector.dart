@@ -30,6 +30,7 @@ class _ProjectorWidgetState extends State<ProjectorWidget> {
   String? current_verse;
   String? current_verse_withBr;
   String next_btn_content = 'Strofa următoare';
+  
 
   @override
   void initState() {
