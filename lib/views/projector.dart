@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:textimo_mobile_app/views/home_page.dart';
 import 'package:textimo_mobile_app/models/song_single.dart';
 import 'package:textimo_mobile_app/services/get_details_song_service.dart';
+import 'package:textimo_mobile_app/services/preview_song_service.dart';
 
 class ProjectorController extends GetxController {
   dynamic argumentData = Get.arguments;
@@ -22,22 +23,45 @@ class _ProjectorWidgetState extends State<ProjectorWidget> {
 
   SongSingle? nowPlayingSongDetails;
   bool isLoaded = false;
+  bool isTextLoaded = false;
+  bool isLastVerse = false;
+  String? current_verse;
+  String next_btn_content = 'Strofa următoare';
 
   @override
   void initState() {
     super.initState();
 
     getNowPlayingSongInfo();
+    getVerseContent();
   }
 
   getNowPlayingSongInfo() async {
     nowPlayingSongDetails = await GetSongInfo().getSongInfo(controller.songId!);
     if (nowPlayingSongDetails != null) {
+      if(controller.verseNumber==nowPlayingSongDetails?.totalNumLyrics.toString()){
+        setState(() {
+          isLastVerse = true;
+          next_btn_content = "Opreste proiectia";
+        });
+      }
       setState(() {
         isLoaded = true;
       });
     }
   }
+
+  getVerseContent() async{
+    var verseContent = await PreviewSongService().getPreviewSongInfo(controller.songId!, controller.verseNumber!);
+    if(verseContent != null){
+      setState(() {
+        current_verse = verseContent[0].lyricsText;
+        current_verse = current_verse?.replaceAll("<br>", "\n");
+        isTextLoaded = true;
+      });
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -88,14 +112,18 @@ class _ProjectorWidgetState extends State<ProjectorWidget> {
                           fontWeight: FontWeight.w600,
                           fontSize: 18)),
                 ),
-                Container(
-                  color: Color.fromARGB(255, 219, 219, 219),
-                  alignment: Alignment.centerLeft,
-                  child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Text(
-                          "jhfjdfhjhfdjdhfjhdf \nyfdjyfjdy\ngfshdhgfdhdgfhdgfhdgfhdfhgdf\ndfhjdhfjhdfj\njdfjdfjgdf\njhsjdj",
-                          style: TextStyle(color: Colors.black, fontSize: 18))),
+                Visibility(
+                  visible: isTextLoaded,
+                  replacement: Center(child: CircularProgressIndicator()),
+                  child: Container(
+                    color: Color.fromARGB(255, 219, 219, 219),
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Text(
+                            current_verse ?? '',
+                            style: TextStyle(color: Colors.black, fontSize: 18))),
+                  ),
                 ),
                 SizedBox(height: 25),
                 Divider(
@@ -157,7 +185,7 @@ class _ProjectorWidgetState extends State<ProjectorWidget> {
                           TextSpan(
                             // ignore: prefer_const_literals_to_create_immutables
                             children: <InlineSpan>[
-                              TextSpan(text: 'Strofa următoare'),
+                              TextSpan(text: next_btn_content),
                               WidgetSpan(
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(
