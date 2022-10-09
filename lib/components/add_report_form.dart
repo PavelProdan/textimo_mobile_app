@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:textimo_mobile_app/services/add_new_report_service.dart';
 
 
 class add_report_form extends StatefulWidget {
@@ -59,15 +60,23 @@ class add_report_formState extends State<add_report_form> {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16.0),
             child: ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 if (_formKey.currentState!.validate()) {
                   
                   // insert the data into the database
-
-                  Navigator.pop(context, true);
+                  var response = await AddNewReportService().addNewReport(widget.songId, widget.verseNumber, myController.text);
+                  if(response.statusCode == 200){
+                    Navigator.pop(context, true);
                   ScaffoldMessenger.of(context).showSnackBar(
-                     SnackBar(content: Text('Problema a trimisa cu succes: ${widget.songId}, ${widget.verseNumber}, ${myController.text}')),
+                     SnackBar(content: Text('Problema a fost adaugată cu succes.')),
                   );
+                  }else{
+                    Navigator.pop(context, true);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                     SnackBar(content: Text('Eroare! Problema nu a putut fi adaugată: $response')),
+                  );
+                  }
+                  
                 }
               },
               child: const Text('Trimite'),
