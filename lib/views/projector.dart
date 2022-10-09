@@ -31,7 +31,6 @@ class _ProjectorWidgetState extends State<ProjectorWidget> {
   String? current_verse_withBr;
   String next_btn_content = 'Strofa următoare';
 
-
   @override
   void initState() {
     super.initState();
@@ -43,10 +42,11 @@ class _ProjectorWidgetState extends State<ProjectorWidget> {
   getNowPlayingSongInfo() async {
     nowPlayingSongDetails = await GetSongInfo().getSongInfo(controller.songId!);
     if (nowPlayingSongDetails != null) {
-      if(controller.verseNumber==nowPlayingSongDetails?.totalNumLyrics.toString()){
+      if (controller.verseNumber ==
+          nowPlayingSongDetails?.totalNumLyrics.toString()) {
         setState(() {
           isLastVerse = true;
-          next_btn_content = "Opreste proiectia";
+          next_btn_content = "Opreste proiecția";
         });
       }
       setState(() {
@@ -55,39 +55,36 @@ class _ProjectorWidgetState extends State<ProjectorWidget> {
     }
   }
 
-  getVerseContent() async{
-    var verseContent = await PreviewSongService().getPreviewSongInfo(controller.songId!, controller.verseNumber!);
-    if(verseContent != null){
-      projectToLivePage(current_verse_withBr!);
-
+  getVerseContent() async {
+    var verseContent = await PreviewSongService()
+        .getPreviewSongInfo(controller.songId!, controller.verseNumber!);
+    if (verseContent != null) {
       setState(() {
         current_verse = verseContent[0].lyricsText;
         current_verse_withBr = verseContent[0].lyricsText;
+        projectToLivePage(current_verse_withBr!);
         current_verse = current_verse!.replaceAll("<br>", "\n");
         isTextLoaded = true;
       });
     }
   }
 
-  projectToLivePage(String live_verse) async{
-    var sendToProjector = await SendToProjectorService().sendToProjector(live_verse, controller.songId!, controller.verseNumber!);
-    if(sendToProjector != null){
-      Get.snackbar("Info projector", "Projector is now live");
-    }else{
-      Get.snackbar("Info projector", "Projector is NOT live");
+  projectToLivePage(String live_verse) async {
+    var sendToProjector = await SendToProjectorService().sendToProjector(
+        live_verse, controller.songId!, controller.verseNumber!);
+    if (sendToProjector == null) {
+      Get.snackbar("Eroare! Nu s-a putut proiecta!", sendToProjector.body, snackPosition: SnackPosition.BOTTOM);
     }
-
   }
 
-  stopLivePlaying() async{
+  stopLivePlaying() async {
     var stopProjector = await StopProjectorService().stopProjector();
-    if(stopProjector != null){
-      Get.snackbar("Info projector", "Projector is now stopped");
-    }else{
-      Get.snackbar("Info projector", "Projector is NOT stopped");
+    if (stopProjector != null) {
+      Get.snackbar("Proiecția a fost oprită cu succes.", "", snackPosition: SnackPosition.BOTTOM);
+    } else {
+      Get.snackbar("Eroare!", "Proiecția nu a putut fi oprită!", snackPosition: SnackPosition.BOTTOM);
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -97,8 +94,8 @@ class _ProjectorWidgetState extends State<ProjectorWidget> {
         // get back and send a require_refresh parameter to the previous page with getx
         //Get.back(result: "require_refresh");
         Get.offAll(() => HomePage(), arguments: [
-                        {"require_refresh"},
-                      ]);
+          {"require_refresh"},
+        ]);
         return true;
       },
       child: Scaffold(
@@ -106,15 +103,27 @@ class _ProjectorWidgetState extends State<ProjectorWidget> {
             title: Text("Proiecție Live"),
             centerTitle: true,
             backgroundColor: const Color(0xFF3F63F1),
+            automaticallyImplyLeading: false,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                // get back and send a require_refresh parameter to the previous page with getx
+                //Get.back(result: "require_refresh");
+                Get.offAll(() => HomePage(), arguments: [
+                  {"require_refresh"},
+                ]);
+              },
+            ),
+             
             actions: <Widget>[
               IconButton(
                   icon: const Icon(Icons.hide_source),
-                  tooltip: 'Opreste proiecția',
+                  tooltip: 'Oprește proiecția',
                   onPressed: () {
                     stopLivePlaying();
                     Get.offAll(() => HomePage(), arguments: [
-                        {"require_refresh"},
-                      ]);
+                      {"require_refresh"},
+                    ]);
                   } //showDialogTest(context),
 
                   ),
@@ -154,9 +163,9 @@ class _ProjectorWidgetState extends State<ProjectorWidget> {
                     alignment: Alignment.centerLeft,
                     child: Padding(
                         padding: const EdgeInsets.all(10.0),
-                        child: Text(
-                            current_verse ?? '',
-                            style: TextStyle(color: Colors.black, fontSize: 18))),
+                        child: Text(current_verse ?? '',
+                            style:
+                                TextStyle(color: Colors.black, fontSize: 18))),
                   ),
                 ),
                 SizedBox(height: 25),
@@ -202,7 +211,21 @@ class _ProjectorWidgetState extends State<ProjectorWidget> {
                     )),
                 Spacer(),
                 GestureDetector(
-                    onTap: () {},
+                    onTap: () {
+                      print("clicked button");
+                      if (isLastVerse) {
+                        stopLivePlaying();
+                        Get.offAll(() => HomePage(), arguments: [
+                          {"require_refresh"},
+                        ]);
+                      } else {
+                        int nextVerse = int.parse(controller.verseNumber!) + 1;
+                        Get.offAll(() => ProjectorWidget(), arguments: [
+                          {"song_id": controller.songId},
+                          {"verse_number": nextVerse.toString()}
+                        ]);
+                      }
+                    },
                     child: Container(
                       width: 500.0,
                       padding: EdgeInsets.fromLTRB(20.0, 25.0, 20.0, 25.0),
