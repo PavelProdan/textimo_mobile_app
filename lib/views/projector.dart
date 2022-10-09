@@ -6,6 +6,7 @@ import 'package:textimo_mobile_app/services/get_details_song_service.dart';
 import 'package:textimo_mobile_app/services/preview_song_service.dart';
 import 'package:textimo_mobile_app/services/send_to_projector_service.dart';
 import 'package:textimo_mobile_app/services/stop_projector_service.dart';
+import 'package:textimo_mobile_app/components/add_report_form.dart';
 
 class ProjectorController extends GetxController {
   dynamic argumentData = Get.arguments;
@@ -73,16 +74,19 @@ class _ProjectorWidgetState extends State<ProjectorWidget> {
     var sendToProjector = await SendToProjectorService().sendToProjector(
         live_verse, controller.songId!, controller.verseNumber!);
     if (sendToProjector == null) {
-      Get.snackbar("Eroare! Nu s-a putut proiecta!", sendToProjector.body, snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar("Eroare! Nu s-a putut proiecta!", sendToProjector.body,
+          snackPosition: SnackPosition.BOTTOM);
     }
   }
 
   stopLivePlaying() async {
     var stopProjector = await StopProjectorService().stopProjector();
     if (stopProjector != null) {
-      Get.snackbar("Proiecția a fost oprită cu succes.", "", snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar("Proiecția a fost oprită cu succes.", "",
+          snackPosition: SnackPosition.BOTTOM);
     } else {
-      Get.snackbar("Eroare!", "Proiecția nu a putut fi oprită!", snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar("Eroare!", "Proiecția nu a putut fi oprită!",
+          snackPosition: SnackPosition.BOTTOM);
     }
   }
 
@@ -114,7 +118,6 @@ class _ProjectorWidgetState extends State<ProjectorWidget> {
                 ]);
               },
             ),
-             
             actions: <Widget>[
               IconButton(
                   icon: const Icon(Icons.hide_source),
@@ -178,7 +181,15 @@ class _ProjectorWidgetState extends State<ProjectorWidget> {
                 ),
                 SizedBox(height: 25),
                 GestureDetector(
-                    onTap: () {},
+                    onTap: () {
+                      Get.defaultDialog(
+                          title: "Raportează o problemă la strofa curentă",
+                          backgroundColor: Color.fromARGB(255, 236, 236, 236),
+                          titleStyle: TextStyle(color: Colors.black),
+                          middleTextStyle: TextStyle(color: Colors.black),
+                          content: add_report_form(songId: controller.songId!, verseNumber: controller.verseNumber!),
+                          radius: 10);
+                    },
                     child: Container(
                       width: 500.0,
                       padding: EdgeInsets.fromLTRB(8.0, 10.0, 8.0, 10.0),
