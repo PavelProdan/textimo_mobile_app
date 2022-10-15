@@ -10,7 +10,6 @@ import 'package:get/get.dart';
 import '../models/song.dart';
 import '../services/get_songs_service.dart';
 
-
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -19,7 +18,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   List<Song> songs = [];
   NowPlayingSong? nowPlayingSong;
   SongSingle? nowPlayingSongInfo;
@@ -109,7 +107,7 @@ class _HomePageState extends State<HomePage> {
         actions: <Widget>[
           IconButton(
               icon: const Icon(Icons.search),
-              tooltip: 'Search a song',
+              tooltip: 'Caută o melodie',
               onPressed: () {} //showDialogTest(context),
 
               ),
@@ -134,15 +132,14 @@ class _HomePageState extends State<HomePage> {
             ),
             onPressed: () async {
               // open song projector page
-                      var data = await Get.to(() => ProjectorWidget(), arguments: [
-                        {"song_id": now_playing_songId},
-                        {"verse_number": now_playing_song_verse_number}
-                      ]);
+              var data = await Get.to(() => ProjectorWidget(), arguments: [
+                {"song_id": now_playing_songId},
+                {"verse_number": now_playing_song_verse_number}
+              ]);
 
-                      if(data=="require_refresh"){
-                        getNowPlayingSong();
-
-                      }
+              if (data == "require_refresh") {
+                getNowPlayingSong();
+              }
             },
           ),
         ),
@@ -176,24 +173,23 @@ class _HomePageState extends State<HomePage> {
                 child: ListTile(
                   title: InkWell(
                     onTap: () async {
-
-                      String local_verse_number="1";
-                      if(is_now_playing_btn_visible){
-                        if(now_playing_songId == songs[index].id){
+                      // open projector page method
+                      String local_verse_number = "1";
+                      if (is_now_playing_btn_visible) {
+                        if (now_playing_songId == songs[index].id) {
                           local_verse_number = now_playing_song_verse_number;
                         }
                       }
-                      
-                      // open song projector page
-                      var data = await Get.to(() => ProjectorWidget(), arguments: [
+                      var data =
+                          await Get.to(() => ProjectorWidget(), arguments: [
                         {"song_id": songs[index].id},
                         {"verse_number": local_verse_number}
                       ]);
 
-                      if(data=="require_refresh"){
+                      if (data == "require_refresh") {
                         getNowPlayingSong();
-
                       }
+                      // end of open projector page method
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(13.0),
@@ -201,10 +197,28 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   trailing: PopupMenuButton<String>(
-                    onSelected: (String value) {
-                      setState(() {
-                        //_selectedMenu = item.name;
-                      });
+                    onSelected: (String value) async {
+                      if (value == "Afiseaza") {
+
+                        // open projector page method
+                        String local_verse_number = "1";
+                        if (is_now_playing_btn_visible) {
+                          if (now_playing_songId == songs[index].id) {
+                            local_verse_number = now_playing_song_verse_number;
+                          }
+                        }
+                        var data =
+                            await Get.to(() => ProjectorWidget(), arguments: [
+                          {"song_id": songs[index].id},
+                          {"verse_number": local_verse_number}
+                        ]);
+
+                        if (data == "require_refresh") {
+                          getNowPlayingSong();
+                        }
+                        // end of projector page method
+
+                      }
                     },
                     itemBuilder: (BuildContext context) =>
                         <PopupMenuEntry<String>>[
