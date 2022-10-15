@@ -25,10 +25,17 @@ class _ReportsPageState extends State<ReportsPage> {
     getReports(dropdownValue);
   }
 
+
   getReports(String dropdownVal) async {
     if (dropdownVal == 'Raportări în lucru') {
       var response = await GetAllReports().getAllReports();
       if (response != null) {
+        for(int i=0; i<response.length; i++) {
+          var song_name = await GetSongInfo().getSongInfo(response[i].songId);
+          if(song_name!=null){
+            response[i].songId = song_name.songTitle;
+          }
+        }
         setState(() {
           reports = response;
           isLoaded = true;
@@ -51,14 +58,6 @@ class _ReportsPageState extends State<ReportsPage> {
       return false;
     }
   }
-
-  getSongName(String songId) async{
-    var response = await GetSongInfo().getSongInfo(songId);
-    if(response != null){
-      return response.songTitle;
-    }
-  }
-
 
   @override
   Widget build(BuildContext context) {
@@ -98,6 +97,7 @@ class _ReportsPageState extends State<ReportsPage> {
                     );
                   }).toList(),
                 ),
+                SizedBox(height: 10),
 
                 // implement a list builder
                 Expanded(
@@ -112,36 +112,36 @@ class _ReportsPageState extends State<ReportsPage> {
                         child: Column(
                           children: <Widget>[
                             Row(
+                              
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  // ignore: prefer_const_literals_to_create_immutables
-                                  children: <Widget>[
-                                    Padding(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          12.0, 8.0, 8.0, 6.0),
-                                      child: Text(
-                                        "dfh",
-                                        
-                                        //reports[index].songId,
-                                        style: TextStyle(
-                                            fontSize: 16.0,
-                                            fontWeight: FontWeight.bold),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    // ignore: prefer_const_literals_to_create_immutables
+                                    children: <Widget>[
+                                      Padding(
+                                        padding: const EdgeInsets.fromLTRB(12.0, 5.0, 5.0, 4.0),
+                                        child: Text(
+                                          reports[index].songId+", strofa "+reports[index].verseNumber,
+                                          
+                                          style: TextStyle(
+                                              fontSize: 16.0,
+                                              fontWeight: FontWeight.bold),
+                                        ),
                                       ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          12.0, 6.0, 6.0, 12.0),
-                                      child: Text(
-                                        reports[index].reportText,
-                                        style: TextStyle(fontSize: 18.0),
+                                      Padding(
+                                        padding: const EdgeInsets.fromLTRB(12.0, 5.0, 5.0, 4.0),
+                                        child: Text(
+                                          reports[index].reportText,
+                                          style: TextStyle(fontSize: 18.0),
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                                 Padding(
-                                  padding: const EdgeInsets.all(8.0),
+                                  padding: const EdgeInsets.all(10.0),
                                   child: Column(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceEvenly,
@@ -159,9 +159,12 @@ class _ReportsPageState extends State<ReportsPage> {
                                 ),
                               ],
                             ),
-                            Divider(
-                              height: 2.0,
-                              color: Colors.grey,
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Divider(
+                                height: 2.0,
+                                color: Colors.grey,
+                              ),
                             )
                           ],
                         ),
