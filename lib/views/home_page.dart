@@ -7,6 +7,7 @@ import 'package:textimo_mobile_app/models/song_single.dart';
 import 'package:textimo_mobile_app/services/get_details_song_service.dart';
 import 'package:textimo_mobile_app/views/projector.dart';
 import 'package:textimo_mobile_app/views/preview.dart';
+import 'package:textimo_mobile_app/views/edit.dart';
 import 'package:get/get.dart';
 import '../models/song.dart';
 import '../services/get_songs_service.dart';
@@ -224,7 +225,12 @@ class _HomePageState extends State<HomePage> {
                         Get.to(() => PreviewWidget(), arguments: [
                           {"song_id": songs[index].id},
                         ]);
+                      }
 
+                      if(value=="Modifica"){
+                        Get.to(() => EditWidget(), arguments: [
+                          {"song_id": songs[index].id},
+                        ]);
                       }
                     },
                     itemBuilder: (BuildContext context) =>
