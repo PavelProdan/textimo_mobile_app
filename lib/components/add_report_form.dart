@@ -60,6 +60,9 @@ class add_report_formState extends State<add_report_form> {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16.0),
             child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white, backgroundColor: const Color(0xFF3F63F1), // foreground
+              ),
               onPressed: () async {
                 if (_formKey.currentState!.validate()) {
                   

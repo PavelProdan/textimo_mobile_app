@@ -6,6 +6,7 @@ import 'package:textimo_mobile_app/models/now_playing_model.dart';
 import 'package:textimo_mobile_app/models/song_single.dart';
 import 'package:textimo_mobile_app/services/get_details_song_service.dart';
 import 'package:textimo_mobile_app/views/projector.dart';
+import 'package:textimo_mobile_app/views/preview.dart';
 import 'package:get/get.dart';
 import '../models/song.dart';
 import '../services/get_songs_service.dart';
@@ -217,6 +218,12 @@ class _HomePageState extends State<HomePage> {
                           getNowPlayingSong();
                         }
                         // end of projector page method
+
+                      }
+                      if(value=="Previzualizeaza"){
+                        Get.to(() => PreviewWidget(), arguments: [
+                          {"song_id": songs[index].id},
+                        ]);
 
                       }
                     },
