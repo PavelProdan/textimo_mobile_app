@@ -46,7 +46,7 @@ class _EditWidgetState extends State<EditWidget> {
   updateSongLyrics(String verse_number, String text) async {
     var response = await UpdateSongLyricsService()
         .updateSongLyrics(controller.songId!, verse_number, text);
-        print(response);
+    print(response);
     if (response.statusCode == 200) {
       //Get.snackbar("Succes", "Versurile au fost actualizate cu succes");
     } else {
@@ -73,7 +73,6 @@ class _EditWidgetState extends State<EditWidget> {
         forwardAnimationCurve: Curves.easeIn,
       );
     } else {
-      //display a GETX snackbar
       Get.snackbar(
         "Eroare",
         "Datele nu au putut fi actualizate",
@@ -235,17 +234,19 @@ class _EditWidgetState extends State<EditWidget> {
                             ),
                             onPressed: () {
                               // aici avem acces la verseController[number].text, dar nu este implementat in backend optiunea de update strofa
-                              if(number_of_verses!=0){
-                                for(int i=0; i<number_of_verses; i++){
-                                  String current_verse = verseController[i].text;
-                                  current_verse = current_verse.replaceAll("\n", "<br>");
-                                  updateSongLyrics((i+1).toString(), current_verse);
+                              if (number_of_verses != 0) {
+                                for (int i = 0; i < number_of_verses; i++) {
+                                  String current_verse =
+                                      verseController[i].text;
+                                  current_verse =
+                                      current_verse.replaceAll("\n", "<br>");
+                                  updateSongLyrics(
+                                      (i + 1).toString(), current_verse);
                                 }
                               }
                               updateSongTitleAndNumLyrics();
                             },
                             child: Text('Salvează modificările'))),
-                    
                   ],
                 ),
               ),
