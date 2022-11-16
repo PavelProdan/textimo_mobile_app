@@ -58,9 +58,25 @@ class _SettingsPageState extends State<SettingsPage> {
             ],
       ),
 
-      body: Center(
-        child: Text("Settings page"),
-      ),
+      body: Visibility(
+        visible: true,
+        replacement: Center(child: CircularProgressIndicator()),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          // ignore: prefer_const_literals_to_create_immutables
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Text("Culori de fundal",
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold)),
+            ),
+            
+          ],
+        ),
+      )
     );
   }
 }
