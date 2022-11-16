@@ -30,11 +30,6 @@ Drawer drawer_menu() {
           onTap: () {},
         ),
         ListTile(
-          leading: Icon(Icons.help_outline),
-          title: Text('Ajutor'),
-          onTap: () {},
-        ),
-        ListTile(
           leading: Icon(Icons.report),
           title: Text('Raportări'),
           onTap: () {
