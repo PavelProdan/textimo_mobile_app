@@ -28,7 +28,9 @@ Drawer drawer_menu() {
         ListTile(
           leading: Icon(Icons.settings),
           title: Text('Setări'),
-          onTap: () {},
+          onTap: () {
+            Get.to(SettingsPage());
+          },
         ),
         ListTile(
           leading: Icon(Icons.report),
