@@ -27,3 +27,40 @@
 // the left and bottom padding will be selected using a slider and/or a text field
 
 // the show title and show current verse number will be selected using a checkbox
+
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+class SettingsPage extends StatefulWidget {
+  const SettingsPage({super.key});
+
+  @override
+  State<SettingsPage> createState() => _SettingsPageState();
+}
+
+class _SettingsPageState extends State<SettingsPage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        backgroundColor: const Color(0xFF3F63F1),
+        title: Text("Setări"),
+
+        actions: <Widget>[
+              IconButton(
+                  icon: const Icon(Icons.save),
+                  tooltip: 'Salvează setările',
+                  onPressed: () {
+                    // save the settings and refresh the live page
+                  }
+                  ),
+            ],
+      ),
+
+      body: Center(
+        child: Text("Settings page"),
+      ),
+    );
+  }
+}

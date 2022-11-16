@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:textimo_mobile_app/views/reports.dart';
+import 'package:textimo_mobile_app/views/settings.dart';
 import 'package:get/get.dart';
 
 // ignore_for_file: prefer_const_constructors
