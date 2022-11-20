@@ -15,6 +15,11 @@ class SaveSettings {
     int padding_left,
     int padding_bottom,
   ) async {
+    
+    bg_gradient_color_one = bg_gradient_color_one.substring(0, 1) + bg_gradient_color_one.substring(3);
+    bg_gradient_color_two = bg_gradient_color_two.substring(0, 1) + bg_gradient_color_two.substring(3);
+    font_color = font_color.substring(0, 1) + font_color.substring(3);
+
   return http.post(
     Uri.parse('${config.textimo_ip}/save_livepage_settings'),
     headers: <String, String>{
@@ -27,8 +32,8 @@ class SaveSettings {
       "font_color": font_color,
       "font_family": font_family,
       "text_align": text_align,
-      "show_title": show_title,
-      "show_current_strofa_number": show_current_strofa_number,
+      "showTitle": show_title,
+      "showCurrentStrofaNumber": show_current_strofa_number,
       "padding_left": padding_left,
       "padding_bottom": padding_bottom,
     }),

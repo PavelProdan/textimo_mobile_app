@@ -63,11 +63,11 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   GetSettings? current_settings;
   bool isLoaded = false;
-   Color background_color_one = Colors.white;
-   Color background_color_two = Colors.white;
-   Color font_color = Colors.white;
-   bool show_title = true;
-   bool show_current_verse_number = true;
+  Color background_color_one = Colors.white;
+  Color background_color_two = Colors.white;
+  Color font_color = Colors.white;
+  bool show_title = true;
+  bool show_current_verse_number = true;
 
   final text_font_sizeController = TextEditingController();
   final text_left_paddingController = TextEditingController();
@@ -93,8 +93,10 @@ class _SettingsPageState extends State<SettingsPage> {
         text_bottom_paddingController.text =
             current_settings!.paddingBottom.toString();
         current_settings = current_settings;
-        background_color_one = HexColor.fromHex(current_settings!.bgGradientColorOne);
-        background_color_two = HexColor.fromHex(current_settings!.bgGradientColorTwo);
+        background_color_one =
+            HexColor.fromHex(current_settings!.bgGradientColorOne);
+        background_color_two =
+            HexColor.fromHex(current_settings!.bgGradientColorTwo);
         font_color = HexColor.fromHex(current_settings!.fontColor);
         if (current_settings!.showTitle == "yes") {
           show_title = true;
@@ -107,6 +109,55 @@ class _SettingsPageState extends State<SettingsPage> {
           show_current_verse_number = false;
         }
       });
+    }
+  }
+
+  RefreshLivepage() async {
+    await RefreshLivepageService().refreshLivepage();
+  }
+
+  saveSettings() async {
+    
+    var response = await SaveSettings().saveSettings(
+        background_color_one.toHex(),
+        background_color_two.toHex(),
+        int.parse(text_font_sizeController.text),
+        font_color.toHex(),
+        current_settings!.fontFamily,
+        current_settings!.textAlign,
+        current_settings!.showTitle,
+        current_settings!.showCurrentStrofaNumber,
+        int.parse(text_left_paddingController.text),
+        int.parse(text_bottom_paddingController.text));
+    if (response.statusCode == 200) {
+      FocusManager.instance.primaryFocus?.unfocus();
+      RefreshLivepage();
+      Get.snackbar(
+        "Succes",
+        "Setarile au fost actualizate cu succes",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+        margin: EdgeInsets.all(20),
+        borderRadius: 10,
+        snackStyle: SnackStyle.FLOATING,
+        animationDuration: Duration(milliseconds: 300),
+        forwardAnimationCurve: Curves.easeIn,
+      );
+      getCurrentSettings();
+    } else {
+      Get.snackbar(
+        "Eroare! Datele nu au fost salvate",
+        response.statusCode.toString(),
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        margin: EdgeInsets.all(20),
+        borderRadius: 10,
+        snackStyle: SnackStyle.FLOATING,
+        animationDuration: Duration(milliseconds: 300),
+        forwardAnimationCurve: Curves.easeIn,
+      );
     }
   }
 
@@ -312,15 +363,13 @@ class _SettingsPageState extends State<SettingsPage> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(19, 0, 30, 8),
                 child: DropdownButton<String>(
-                  value: current_settings?.fontFamily ?? "Arial, Helvetica, sans-serif",
+                  value: current_settings?.fontFamily ??
+                      "Arial, Helvetica, sans-serif",
                   icon: const Icon(Icons.arrow_downward),
                   iconSize: 24,
                   elevation: 16,
                   style: const TextStyle(color: Colors.black),
-                  underline: Container(
-                    height: 2,
-                    color: const Color(0xFF3F63F1),
-                  ),
+                  
                   onChanged: (String? newValue) {
                     setState(() {
                       current_settings!.fontFamily = newValue!;
@@ -364,10 +413,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   iconSize: 24,
                   elevation: 16,
                   style: const TextStyle(color: Colors.black),
-                  underline: Container(
-                    height: 2,
-                    color: const Color(0xFF3F63F1),
-                  ),
+                  
                   onChanged: (String? newValue) {
                     setState(() {
                       current_settings!.textAlign = newValue!;
@@ -431,6 +477,11 @@ class _SettingsPageState extends State<SettingsPage> {
                   onChanged: (bool? value) {
                     setState(() {
                       show_title = value!;
+                      if(value==true){
+                        current_settings!.showTitle = "yes";
+                      }else{
+                        current_settings!.showTitle = "no";
+                      }
                     });
                   },
                 ),
@@ -444,6 +495,11 @@ class _SettingsPageState extends State<SettingsPage> {
                   onChanged: (bool? value) {
                     setState(() {
                       show_current_verse_number = value!;
+                      if(value==true){
+                        current_settings!.showCurrentStrofaNumber = "yes";
+                      }else{
+                        current_settings!.showCurrentStrofaNumber = "no";
+                      }
                     });
                   },
                 ),
@@ -457,7 +513,9 @@ class _SettingsPageState extends State<SettingsPage> {
                   child: Padding(
                 padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    saveSettings();
+                  },
                   child: Text("Salvează setările"),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF3F63F1),

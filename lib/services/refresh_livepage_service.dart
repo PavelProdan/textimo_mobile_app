@@ -2,7 +2,7 @@ import 'package:textimo_mobile_app/config/config.dart' as config;
 import 'package:http/http.dart' as http;
 
 // create a class that makes a get request to /stop_playing route
-class RefreshLivepage {
+class RefreshLivepageService {
   Future<bool> refreshLivepage() async {
     var client = http.Client();
     var uri = Uri.parse('${config.textimo_ip}/refresh_livepage');
