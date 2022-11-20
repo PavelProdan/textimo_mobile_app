@@ -45,18 +45,46 @@ class _SettingsPageState extends State<SettingsPage> {
   Color font_color = Colors.black;
 
   int text_font_size = 12;
+  int text_left_padding = 12;
+  int text_bottom_padding = 12;
+  bool show_title = true;
+  bool show_current_verse_number = true;
 
   final text_font_sizeController = TextEditingController();
+  final text_left_paddingController = TextEditingController();
+  final text_bottom_paddingController = TextEditingController();
+
+  String current_font = "Arial, Helvetica, sans-serif";
+  final fonts = [
+    'Arial, Helvetica, sans-serif',
+    'Item 2',
+    'Item 3',
+    'Item 4',
+    'Item 5',
+  ];
+
+  String current_align = "middle";
+  final aligns = [
+    'middle',
+    'Item 2',
+    'Item 3',
+    'Item 4',
+    'Item 5',
+  ];
 
   @override
   void initState() {
     super.initState();
-    text_font_sizeController.text = "12";
+    text_font_sizeController.text = text_font_size.toString();
+    text_left_paddingController.text = text_left_padding.toString();
+    text_bottom_paddingController.text = text_bottom_padding.toString();
   }
 
   @override
   void dispose() {
     text_font_sizeController.dispose();
+    text_left_paddingController.dispose();
+    text_bottom_paddingController.dispose();
     super.dispose();
   }
 
@@ -67,24 +95,14 @@ class _SettingsPageState extends State<SettingsPage> {
           centerTitle: true,
           backgroundColor: const Color(0xFF3F63F1),
           title: Text("Setări Textimo"),
-          actions: <Widget>[
-            IconButton(
-                icon: const Icon(Icons.save),
-                tooltip: 'Salvează setările',
-                onPressed: () {
-                  // save the settings and refresh the live page
-                }),
-          ],
         ),
         body: Visibility(
           visible: true,
           replacement: Center(child: CircularProgressIndicator()),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            // ignore: prefer_const_literals_to_create_immutables
+          child: ListView(
             children: <Widget>[
               Padding(
-                padding: EdgeInsets.all(10.0),
+                padding: const EdgeInsets.fromLTRB(19, 10, 0, 0),
                 child: Text("Culori de fundal",
                     style: TextStyle(
                       color: Colors.black,
@@ -93,7 +111,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     )),
               ),
               Padding(
-                padding: EdgeInsets.all(10.0),
+                padding: const EdgeInsets.fromLTRB(19, 10, 0, 0),
                 child: Text(
                     "Daca se aleg doua culori diferite se va aplica un efect de gradient intre cele doua.",
                     style: TextStyle(
@@ -102,7 +120,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     )),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(12, 0, 0, 0),
+                padding: const EdgeInsets.fromLTRB(19, 10, 30, 0),
                 child: ElevatedButton(
                   onPressed: () {
                     showDialog(
@@ -139,7 +157,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(12, 0, 0, 0),
+                padding: const EdgeInsets.fromLTRB(19, 10, 30, 7),
                 child: ElevatedButton(
                   onPressed: () {
                     showDialog(
@@ -175,8 +193,13 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                 ),
               ),
+              Divider(
+                color: Color.fromARGB(255, 187, 187, 187),
+                height: 20,
+                thickness: 1,
+              ),
               Padding(
-                padding: EdgeInsets.fromLTRB(12, 15, 0, 0),
+                padding: const EdgeInsets.fromLTRB(19, 10, 5, 5),
                 child: Text("Textul afișat",
                     style: TextStyle(
                       color: Colors.black,
@@ -185,15 +208,15 @@ class _SettingsPageState extends State<SettingsPage> {
                     )),
               ),
               Padding(
-                padding: EdgeInsets.fromLTRB(12, 20, 0, 0),
-                child: Text("Font text (in px)",
+                padding: const EdgeInsets.fromLTRB(19, 10, 0, 0),
+                child: Text("Dimensiunea fontului (in px):",
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 14,
                     )),
               ),
               Padding(
-                padding: EdgeInsets.fromLTRB(12, 0, 0, 0),
+                padding: const EdgeInsets.fromLTRB(19, 5, 30, 0),
                 child: SizedBox(
                   width: 70,
                   child: TextField(
@@ -206,7 +229,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(12, 0, 0, 0),
+                padding: const EdgeInsets.fromLTRB(19, 10, 30, 0),
                 child: ElevatedButton(
                   onPressed: () {
                     showDialog(
@@ -242,6 +265,169 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                 ),
               ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(19, 15, 0, 0),
+                child: Text("Font text:",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 14,
+                    )),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(19, 0, 30, 8),
+                child: DropdownButton<String>(
+                  value: current_font,
+                  icon: const Icon(Icons.arrow_downward),
+                  iconSize: 24,
+                  elevation: 16,
+                  style: const TextStyle(color: Colors.black),
+                  underline: Container(
+                    height: 2,
+                    color: const Color(0xFF3F63F1),
+                  ),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      current_font = newValue!;
+                    });
+                  },
+                  items: fonts.map((String items) {
+                    return DropdownMenuItem(
+                      value: items,
+                      child: Text(items),
+                    );
+                  }).toList(),
+                ),
+              ),
+              Divider(
+                color: Color.fromARGB(255, 187, 187, 187),
+                height: 20,
+                thickness: 1,
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(19, 10, 5, 5),
+                child: Text("Opțiuni suplimentare de afișare",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    )),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(19, 15, 0, 0),
+                child: Text("Pozitie de afisare:",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 14,
+                    )),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(19, 0, 30, 8),
+                child: DropdownButton<String>(
+                  value: current_align,
+                  icon: const Icon(Icons.arrow_downward),
+                  iconSize: 24,
+                  elevation: 16,
+                  style: const TextStyle(color: Colors.black),
+                  underline: Container(
+                    height: 2,
+                    color: const Color(0xFF3F63F1),
+                  ),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      current_align = newValue!;
+                    });
+                  },
+                  items: aligns.map((String items) {
+                    return DropdownMenuItem(
+                      value: items,
+                      child: Text(items),
+                    );
+                  }).toList(),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(19, 10, 0, 0),
+                child: Text("Padding stanga (in px):",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 14,
+                    )),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(19, 5, 30, 0),
+                child: SizedBox(
+                  width: 70,
+                  child: TextField(
+                    controller: text_left_paddingController,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(19, 10, 0, 0),
+                child: Text("Padding jos (in px):",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 14,
+                    )),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(19, 5, 30, 0),
+                child: SizedBox(
+                  width: 70,
+                  child: TextField(
+                    controller: text_bottom_paddingController,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(7, 10, 10, 0),
+                child: CheckboxListTile(
+                  title: Text("Afișează titlul melodiei pe pagina Live"),
+                  value: show_title,
+                  onChanged: (bool? value) {
+                    setState(() {
+                      show_title = value!;
+                    });
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(7, 10, 10, 0),
+                child: CheckboxListTile(
+                  title:
+                      Text("Afișează numarul strofei curente pe pagina Live"),
+                  value: show_current_verse_number,
+                  onChanged: (bool? value) {
+                    setState(() {
+                      show_current_verse_number = value!;
+                    });
+                  },
+                ),
+              ),
+              Divider(
+                color: Color.fromARGB(255, 187, 187, 187),
+                height: 20,
+                thickness: 1,
+              ),
+              Center(
+                  child: Padding(
+                padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                child: ElevatedButton(
+                  onPressed: () {},
+                  child: Text("Salvează setările"),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF3F63F1),
+                  ),
+                ),
+              )),
             ],
           ),
         ));
