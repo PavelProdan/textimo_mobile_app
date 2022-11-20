@@ -32,6 +32,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:textimo_mobile_app/services/get_settings_service.dart';
+import 'package:textimo_mobile_app/services/save_settings_service.dart';
+import 'package:textimo_mobile_app/services/refresh_livepage_service.dart';
 import 'package:textimo_mobile_app/models/get_settings_model.dart';
 
 extension HexColor on Color {
