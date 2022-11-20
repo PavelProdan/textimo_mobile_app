@@ -31,6 +31,25 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:textimo_mobile_app/services/get_settings_service.dart';
+import 'package:textimo_mobile_app/models/get_settings_model.dart';
+
+extension HexColor on Color {
+  /// String is in the format "aabbcc" or "ffaabbcc" with an optional leading "#".
+  static Color fromHex(String hexString) {
+    final buffer = StringBuffer();
+    if (hexString.length == 6 || hexString.length == 7) buffer.write('ff');
+    buffer.write(hexString.replaceFirst('#', ''));
+    return Color(int.parse(buffer.toString(), radix: 16));
+  }
+
+  /// Prefixes a hash sign if [leadingHashSign] is set to `true` (default is `true`).
+  String toHex({bool leadingHashSign = true}) => '${leadingHashSign ? '#' : ''}'
+      '${alpha.toRadixString(16).padLeft(2, '0')}'
+      '${red.toRadixString(16).padLeft(2, '0')}'
+      '${green.toRadixString(16).padLeft(2, '0')}'
+      '${blue.toRadixString(16).padLeft(2, '0')}';
+}
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -40,44 +59,59 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  Color background_color_one = Colors.lightBlue;
-  Color background_color_two = Colors.lightBlue;
-  Color font_color = Colors.black;
-
-  int text_font_size = 12;
-  int text_left_padding = 12;
-  int text_bottom_padding = 12;
-  bool show_title = true;
-  bool show_current_verse_number = true;
+  GetSettings? current_settings;
+  bool isLoaded = false;
+   Color background_color_one = Colors.white;
+   Color background_color_two = Colors.white;
+   Color font_color = Colors.white;
+   bool show_title = true;
+   bool show_current_verse_number = true;
 
   final text_font_sizeController = TextEditingController();
   final text_left_paddingController = TextEditingController();
   final text_bottom_paddingController = TextEditingController();
 
-  String current_font = "Arial, Helvetica, sans-serif";
   final fonts = [
     'Arial, Helvetica, sans-serif',
-    'Item 2',
-    'Item 3',
-    'Item 4',
-    'Item 5',
+    'Tahoma, sans-serif',
+    'Georgia, serif',
+    "'Brush Script MT', cursive",
   ];
 
-  String current_align = "middle";
-  final aligns = [
-    'middle',
-    'Item 2',
-    'Item 3',
-    'Item 4',
-    'Item 5',
-  ];
+  final aligns = ['center', 'left', 'middle'];
+
+  getCurrentSettings() async {
+    current_settings = await GetNowPlayingSong().getSettings();
+    if (current_settings != null) {
+      setState(() {
+        isLoaded = true;
+        text_font_sizeController.text = current_settings!.fontSize.toString();
+        text_left_paddingController.text =
+            current_settings!.paddingLeft.toString();
+        text_bottom_paddingController.text =
+            current_settings!.paddingBottom.toString();
+        current_settings = current_settings;
+        background_color_one = HexColor.fromHex(current_settings!.bgGradientColorOne);
+        background_color_two = HexColor.fromHex(current_settings!.bgGradientColorTwo);
+        font_color = HexColor.fromHex(current_settings!.fontColor);
+        if (current_settings!.showTitle == "yes") {
+          show_title = true;
+        } else {
+          show_title = false;
+        }
+        if (current_settings!.showCurrentStrofaNumber == "yes") {
+          show_current_verse_number = true;
+        } else {
+          show_current_verse_number = false;
+        }
+      });
+    }
+  }
 
   @override
   void initState() {
     super.initState();
-    text_font_sizeController.text = text_font_size.toString();
-    text_left_paddingController.text = text_left_padding.toString();
-    text_bottom_paddingController.text = text_bottom_padding.toString();
+    getCurrentSettings();
   }
 
   @override
@@ -97,7 +131,7 @@ class _SettingsPageState extends State<SettingsPage> {
           title: Text("Setări Textimo"),
         ),
         body: Visibility(
-          visible: true,
+          visible: isLoaded,
           replacement: Center(child: CircularProgressIndicator()),
           child: ListView(
             children: <Widget>[
@@ -276,7 +310,7 @@ class _SettingsPageState extends State<SettingsPage> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(19, 0, 30, 8),
                 child: DropdownButton<String>(
-                  value: current_font,
+                  value: current_settings?.fontFamily ?? "Arial, Helvetica, sans-serif",
                   icon: const Icon(Icons.arrow_downward),
                   iconSize: 24,
                   elevation: 16,
@@ -287,7 +321,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                   onChanged: (String? newValue) {
                     setState(() {
-                      current_font = newValue!;
+                      current_settings!.fontFamily = newValue!;
                     });
                   },
                   items: fonts.map((String items) {
@@ -323,7 +357,7 @@ class _SettingsPageState extends State<SettingsPage> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(19, 0, 30, 8),
                 child: DropdownButton<String>(
-                  value: current_align,
+                  value: current_settings?.textAlign ?? "center",
                   icon: const Icon(Icons.arrow_downward),
                   iconSize: 24,
                   elevation: 16,
@@ -334,7 +368,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                   onChanged: (String? newValue) {
                     setState(() {
-                      current_align = newValue!;
+                      current_settings!.textAlign = newValue!;
                     });
                   },
                   items: aligns.map((String items) {
