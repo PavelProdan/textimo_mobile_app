@@ -8,6 +8,7 @@ import 'package:textimo_mobile_app/models/song_single.dart';
 import 'package:textimo_mobile_app/services/get_details_song_service.dart';
 import 'package:textimo_mobile_app/views/projector.dart';
 import 'package:textimo_mobile_app/views/preview.dart';
+import 'package:textimo_mobile_app/views/ocr_concept.dart';
 import 'package:textimo_mobile_app/views/edit.dart';
 import 'package:textimo_mobile_app/services/delete_song_service.dart';
 import 'package:get/get.dart';

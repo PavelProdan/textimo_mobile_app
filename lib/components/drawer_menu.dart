@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:textimo_mobile_app/views/reports.dart';
 import 'package:textimo_mobile_app/views/settings.dart';
+import 'package:textimo_mobile_app/views/ocr_concept.dart';
 import 'package:get/get.dart';
 
 // ignore_for_file: prefer_const_constructors
@@ -19,6 +20,14 @@ Drawer drawer_menu() {
               child: Image(
                 image: AssetImage('assets/textimoLogo.png'),
               )),
+        ),
+        ListTile(
+          leading: Icon(Icons.add_circle_outline),
+          title: Text('Ocr Concept'),
+          onTap: () {
+            Get.to(OcrPage());
+          
+          },
         ),
         ListTile(
           leading: Icon(Icons.add_circle_outline),

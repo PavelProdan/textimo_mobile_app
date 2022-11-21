@@ -38,6 +38,10 @@ dependencies:
   get: ^4.6.5
   pull_to_refresh: ^2.0.0
   flutter_colorpicker: ^1.0.3
+  google_ml_kit: ^0.7.3
+  image_picker: ^0.8.4+9
+  image_cropper: ^3.0.1
+  
 
 
 dev_dependencies:
