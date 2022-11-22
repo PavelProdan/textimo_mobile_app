@@ -29,38 +29,190 @@ class AddSongPage extends StatefulWidget {
 class _AddSongPageState extends State<AddSongPage> {
   final AddSongController controller = Get.put(AddSongController());
 
+  String? songId;
+  int? currentStep;
+  bool loaded = false;
+  late bool deleteOnExit;
+  late bool showPreviosButton;
+
   @override
   void initState() {
     super.initState();
+    getParams();
+  }
 
+  getParams() {
+    songId = controller.songId;
+    currentStep = controller.currentStep;
+
+    if (songId == "empty") {
+      loaded = true;
+      deleteOnExit = false;
+      showPreviosButton = false;
+    }else{
+      loaded = true;
+      showPreviosButton = true;
+      deleteOnExit = true;
+    }
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        Get.offAll(() => HomePage());
-        return true;
+        if (deleteOnExit) {
+          //delete song and then go home
+          Get.defaultDialog(
+                            title: "Atenție!",
+                            middleText: "Dacă părăsești această pagină, melodia adăugată va fi ștearsă.",
+                            textConfirm: "Părăsește pagina",
+                            textCancel: "Anulare",
+                            confirmTextColor: Colors.white,
+                            cancelTextColor: Colors.black,
+                            buttonColor: Colors.red,
+                            onConfirm: () async {
+                              // final response = await DeleteSongService().deleteSong(songs[index].id);
+                              // if(response.statusCode==200){
+                              //   Get.back();
+                              //   Get.snackbar("Succes", "Melodia a fost stearsa cu succes!");
+                              //   retrieveSongs(isRefresh: true);
+                              // }else{
+                              //   Get.back();
+                              //   Get.snackbar("Eroare", "A aparut o eroare la stergerea melodiei!");
+                              // }
+                              Get.offAll(() => HomePage());
+                            },
+                            onCancel: () {
+                              Get.back();
+                            });
+          
+        } else {
+          Get.offAll(() => HomePage());
+        }
+        return false;
       },
       child: Scaffold(
           appBar: AppBar(
-            title: Text("Adaugă o melodie"),
+            title: Text("Adaugă o melodie nouă"),
             centerTitle: true,
             backgroundColor: const Color(0xFF3F63F1),
             automaticallyImplyLeading: false,
             leading: IconButton(
               icon: Icon(Icons.arrow_back),
               onPressed: () {
-                Get.offAll(() => HomePage());
+                if (deleteOnExit) {
+                  //delete song and then go home
+                  Get.defaultDialog(
+                            title: "Atenție!",
+                            middleText: "Dacă părăsești această pagină, melodia adăugată va fi ștearsă.",
+                            textConfirm: "Părăsește pagina",
+                            textCancel: "Anulare",
+                            confirmTextColor: Colors.white,
+                            cancelTextColor: Colors.black,
+                            buttonColor: Colors.red,
+                            onConfirm: () async {
+                              // final response = await DeleteSongService().deleteSong(songs[index].id);
+                              // if(response.statusCode==200){
+                              //   Get.back();
+                              //   Get.snackbar("Succes", "Melodia a fost stearsa cu succes!");
+                              //   retrieveSongs(isRefresh: true);
+                              // }else{
+                              //   Get.back();
+                              //   Get.snackbar("Eroare", "A aparut o eroare la stergerea melodiei!");
+                              // }
+                              Get.offAll(() => HomePage());
+                            },
+                            onCancel: () {
+                              Get.back();
+                            });
+                } else {
+                  Get.offAll(() => HomePage());
+                }
               },
             ),
           ),
           body: Visibility(
-            visible: true,
+            visible: loaded,
             replacement: Center(child: CircularProgressIndicator()),
-            child: Text("Current Step: ${controller.currentStep}, current songId: ${controller.songId}"),
+            // ignore: prefer_const_literals_to_create_immutables
+            child: ListView(children: [
+              if (!deleteOnExit) ...[
+                TitleWidget(),
+              ] else ...[
+                Text("songId: $songId"),
+              ]
+            ]),
           )),
     );
+  }
+}
 
+class TitleWidget extends StatelessWidget {
+  const TitleWidget({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(children: <Widget>[
+      Padding(
+        padding: const EdgeInsets.fromLTRB(19, 10, 0, 0),
+        child: Text("Titlu melodie",
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 14,
+            )),
+      ),
+      Padding(
+        padding: const EdgeInsets.fromLTRB(19, 5, 30, 0),
+        child: SizedBox(
+          //width: 70,
+          child: TextField(
+            //controller: text_font_sizeController,
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+            ),
+          ),
+        ),
+      ),
+      Padding(
+        padding: const EdgeInsets.fromLTRB(19, 10, 0, 0),
+        child: Text("Numar strofe:",
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 14,
+            )),
+      ),
+      Padding(
+        padding: const EdgeInsets.fromLTRB(19, 5, 30, 0),
+        child: SizedBox(
+          //width: 70,
+          child: TextField(
+            //controller: text_font_sizeController,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+            ),
+          ),
+        ),
+      ),
+      Center(
+          child: Padding(
+        padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+        child: ElevatedButton(
+          onPressed: () {
+            Get.offAll(() => AddSongPage(), arguments: [
+              {"song_id": "not empty"},
+              {"current_step": 1}
+            ]);
+          },
+          child: Text("Pasul urmator"),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFF3F63F1),
+          ),
+        ),
+      )),
+    ]);
   }
 }

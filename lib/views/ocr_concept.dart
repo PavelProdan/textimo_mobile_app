@@ -43,7 +43,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text("Text Recognition"),
+        title: const Text("Adaugă versuri (OCR)"),
       ),
       body: Center(
           child: SingleChildScrollView(

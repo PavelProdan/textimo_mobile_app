@@ -34,8 +34,8 @@ Drawer drawer_menu() {
           title: Text('Adaugă o piesă nouă'),
           onTap: () {
             Get.to(() => AddSongPage(), arguments: [
-              {"song_id": ""},
-              {"verse_number": 0}
+              {"song_id": "empty"},
+              {"current_step": 0}
             ]);
           },
         ),
