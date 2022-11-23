@@ -46,19 +46,19 @@ class _HomePageState extends State<HomePage> {
     nowPlayingSong = await GetNowPlayingSong().getNowPlayingSong();
     if (nowPlayingSong != null) {
       if (nowPlayingSong?.songId == "0") {
-        setState(() {
-          is_now_playing_btn_visible = false;
-        });
+        
+        is_now_playing_btn_visible = false;
+        if(mounted){setState(() {});}
       } else {
         nowPlayingSongInfo =
             await GetSongInfo().getSongInfo(nowPlayingSong!.songId);
         if (nowPlayingSongInfo != null) {
-          setState(() {
+          
             now_playing_song_title = nowPlayingSongInfo!.songTitle;
             now_playing_song_verse_number = nowPlayingSong!.verseNumber;
             now_playing_songId = nowPlayingSong!.songId;
             is_now_playing_btn_visible = true;
-          });
+          if(mounted){setState(() {});}
         }
       }
     }
@@ -83,7 +83,7 @@ class _HomePageState extends State<HomePage> {
       }
       offset = offset + limit;
 
-      setState(() {});
+      if(mounted){setState(() {});}
       return true;
     } else {
       return false;

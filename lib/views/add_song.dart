@@ -7,11 +7,18 @@
 // !! KNOWN ISSUE: if user force closes the app, the song will not be deleted, but when user wants to project this song, app wil crash
 // This known issue can be partially solved if in the first step, the song has "TEMP" at the beginning of the song title and at the final save of the last verse, "TEMP" will be removed
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:textimo_mobile_app/services/delete_song_service.dart';
+import 'package:textimo_mobile_app/services/preview_one_verse_service.dart';
+import 'package:textimo_mobile_app/services/update_song_title.dart';
 import 'package:textimo_mobile_app/views/home_page.dart';
 import 'package:textimo_mobile_app/models/song_single.dart';
 import 'package:textimo_mobile_app/services/get_details_song_service.dart';
+import 'package:textimo_mobile_app/services/add_new_song_service.dart';
+import 'package:textimo_mobile_app/services/add_lyrics_service.dart';
 
 class AddSongController extends GetxController {
   dynamic argumentData = Get.arguments;
@@ -31,14 +38,57 @@ class _AddSongPageState extends State<AddSongPage> {
 
   String? songId;
   int? currentStep;
+  SongSingle currentSongInfo = SongSingle(
+    id: '0',
+    songTitle: '0',
+    totalNumLyrics: '0',
+  );
+
+  String? lyrics_content;
   bool loaded = false;
   late bool deleteOnExit;
   late bool showPreviosButton;
+  late bool allowEdit;
+  bool showStep0 = false;
 
   @override
   void initState() {
     super.initState();
     getParams();
+    flowExecutor();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  void flowExecutor() {
+    if (songId == "empty") {
+      setState(() {
+        loaded = true;
+      });
+      allowEdit =
+          false; // this means that the song is new and on "Pasul urmator" press the song will be created
+    } else {
+      allowEdit =
+          true; // this means that the song is not new and on "Pasul urmator" press the song will be updated with current data
+      fetchSongInfo(songId!);
+    }
+  }
+
+  void fetchSongInfo(String sondId) async {
+    var response = await GetSongInfo().getSongInfo(songId!);
+    if (response != null) {
+      currentSongInfo = response;
+    }
+    setState(() {
+      loaded = true;
+    });
+  }
+
+  void fetchSongVerse(String songId, int verseNumber) async {
+    //SongSingle song = await GetDetailsSongService().getSongDetails(songId);
   }
 
   getParams() {
@@ -46,12 +96,18 @@ class _AddSongPageState extends State<AddSongPage> {
     currentStep = controller.currentStep;
 
     if (songId == "empty") {
-      loaded = true;
+      //loaded = true;
       deleteOnExit = false;
       showPreviosButton = false;
-    }else{
-      loaded = true;
+      showStep0 = true;
+    } else {
+      //loaded = true;
       showPreviosButton = true;
+      deleteOnExit = true;
+      showStep0 = false;
+    }
+    if(songId!.length>6 && currentStep == 0){
+      showStep0 = true;
       deleteOnExit = true;
     }
     setState(() {});
@@ -64,29 +120,28 @@ class _AddSongPageState extends State<AddSongPage> {
         if (deleteOnExit) {
           //delete song and then go home
           Get.defaultDialog(
-                            title: "Atenție!",
-                            middleText: "Dacă părăsești această pagină, melodia adăugată va fi ștearsă.",
-                            textConfirm: "Părăsește pagina",
-                            textCancel: "Anulare",
-                            confirmTextColor: Colors.white,
-                            cancelTextColor: Colors.black,
-                            buttonColor: Colors.red,
-                            onConfirm: () async {
-                              // final response = await DeleteSongService().deleteSong(songs[index].id);
-                              // if(response.statusCode==200){
-                              //   Get.back();
-                              //   Get.snackbar("Succes", "Melodia a fost stearsa cu succes!");
-                              //   retrieveSongs(isRefresh: true);
-                              // }else{
-                              //   Get.back();
-                              //   Get.snackbar("Eroare", "A aparut o eroare la stergerea melodiei!");
-                              // }
-                              Get.offAll(() => HomePage());
-                            },
-                            onCancel: () {
-                              Get.back();
-                            });
-          
+              title: "Atenție!",
+              middleText:
+                  "Dacă părăsești această pagină, melodia adăugată va fi ștearsă.",
+              textConfirm: "Părăsește pagina",
+              textCancel: "Anulare",
+              confirmTextColor: Colors.white,
+              cancelTextColor: Colors.black,
+              buttonColor: Colors.red,
+              onConfirm: () async {
+                final response = await DeleteSongService().deleteSong(songId!);
+                if (response.statusCode == 200) {
+                  Get.offAll(() => HomePage());
+                } else {
+                  Get.back();
+                  Get.snackbar(
+                      "Eroare", "A aparut o eroare la stergerea melodiei!");
+                }
+                Get.offAll(() => HomePage());
+              },
+              onCancel: () {
+                Get.back();
+              });
         } else {
           Get.offAll(() => HomePage());
         }
@@ -104,28 +159,29 @@ class _AddSongPageState extends State<AddSongPage> {
                 if (deleteOnExit) {
                   //delete song and then go home
                   Get.defaultDialog(
-                            title: "Atenție!",
-                            middleText: "Dacă părăsești această pagină, melodia adăugată va fi ștearsă.",
-                            textConfirm: "Părăsește pagina",
-                            textCancel: "Anulare",
-                            confirmTextColor: Colors.white,
-                            cancelTextColor: Colors.black,
-                            buttonColor: Colors.red,
-                            onConfirm: () async {
-                              // final response = await DeleteSongService().deleteSong(songs[index].id);
-                              // if(response.statusCode==200){
-                              //   Get.back();
-                              //   Get.snackbar("Succes", "Melodia a fost stearsa cu succes!");
-                              //   retrieveSongs(isRefresh: true);
-                              // }else{
-                              //   Get.back();
-                              //   Get.snackbar("Eroare", "A aparut o eroare la stergerea melodiei!");
-                              // }
-                              Get.offAll(() => HomePage());
-                            },
-                            onCancel: () {
-                              Get.back();
-                            });
+                      title: "Atenție!",
+                      middleText:
+                          "Dacă părăsești această pagină, melodia adăugată va fi ștearsă.",
+                      textConfirm: "Părăsește pagina",
+                      textCancel: "Anulare",
+                      confirmTextColor: Colors.white,
+                      cancelTextColor: Colors.black,
+                      buttonColor: Colors.red,
+                      onConfirm: () async {
+                        final response =
+                            await DeleteSongService().deleteSong(songId!);
+                        if (response.statusCode == 200) {
+                          Get.offAll(() => HomePage());
+                        } else {
+                          Get.back();
+                          Get.snackbar("Eroare",
+                              "A aparut o eroare la stergerea melodiei!");
+                        }
+                        Get.offAll(() => HomePage());
+                      },
+                      onCancel: () {
+                        Get.back();
+                      });
                 } else {
                   Get.offAll(() => HomePage());
                 }
@@ -137,10 +193,17 @@ class _AddSongPageState extends State<AddSongPage> {
             replacement: Center(child: CircularProgressIndicator()),
             // ignore: prefer_const_literals_to_create_immutables
             child: ListView(children: [
-              if (!deleteOnExit) ...[
-                TitleWidget(),
+              if (showStep0) ...[
+                TitleWidget(
+                    showPreviosButton: showPreviosButton,
+                    allowEdit: allowEdit,
+                    currentSongInfo: currentSongInfo),
               ] else ...[
-                Text("songId: $songId"),
+                AddVerseWidget(
+                  allowEdit: allowEdit,
+                  currentSongInfo: currentSongInfo,
+                  currentStep: currentStep!,
+                ),
               ]
             ]),
           )),
@@ -148,71 +211,358 @@ class _AddSongPageState extends State<AddSongPage> {
   }
 }
 
-class TitleWidget extends StatelessWidget {
-  const TitleWidget({
-    Key? key,
-  }) : super(key: key);
+class TitleWidget extends StatefulWidget {
+  final bool showPreviosButton;
+  final bool allowEdit;
+  final SongSingle currentSongInfo;
+
+  const TitleWidget(
+      {super.key,
+      required this.showPreviosButton,
+      required this.allowEdit,
+      required this.currentSongInfo});
+
+  @override
+  State<TitleWidget> createState() => _TitleWidgetState();
+}
+
+class _TitleWidgetState extends State<TitleWidget> {
+  final songTitleController = TextEditingController();
+  final totalNumLyricsController = TextEditingController();
+
+  bool loaded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    getTitleAndNumLyrics();
+  }
+
+  @override
+  void dispose() {
+    songTitleController.dispose();
+    totalNumLyricsController.dispose();
+    super.dispose();
+  }
+
+  getTitleAndNumLyrics() async{
+    if(widget.currentSongInfo.id!=0){
+      SongSingle? response = await GetSongInfo().getSongInfo(widget.currentSongInfo.id.toString());
+      if(response!=null){
+        songTitleController.text = response.songTitle;
+        totalNumLyricsController.text = response.totalNumLyrics;
+        setState(() {
+          loaded = true;
+        });
+      }
+    }
+
+    if(widget.currentSongInfo.id=="0"){
+      setState(() {
+        loaded = true;
+      });
+    }
+  }
+
+  Future<String> addNewSong(String songTitle, String totalnumlyrics) async {
+    var response = await AddNewSongService().addSong(songTitle, totalnumlyrics);
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      Get.snackbar("Eroare", "A aparut o eroare la adaugarea melodiei!");
+      print(
+          "SongTitle: $songTitle, totalNumLyrics: $totalnumlyrics, response: ${response.body}");
+      return "error";
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: <Widget>[
-      Padding(
-        padding: const EdgeInsets.fromLTRB(19, 10, 0, 0),
-        child: Text("Titlu melodie",
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 14,
-            )),
-      ),
-      Padding(
-        padding: const EdgeInsets.fromLTRB(19, 5, 30, 0),
-        child: SizedBox(
-          //width: 70,
-          child: TextField(
-            //controller: text_font_sizeController,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
+    return Visibility(
+      visible: loaded,
+      replacement: Center(child: CircularProgressIndicator()),
+      child: Column(children: <Widget>[
+        Text(widget.currentSongInfo.id),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(19, 10, 0, 0),
+          child: Text("Titlu melodie",
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 14,
+              )),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(19, 5, 30, 0),
+          child: SizedBox(
+            //width: 70,
+            child: TextField(
+              controller: songTitleController,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+              ),
             ),
           ),
         ),
-      ),
-      Padding(
-        padding: const EdgeInsets.fromLTRB(19, 10, 0, 0),
-        child: Text("Numar strofe:",
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 14,
-            )),
-      ),
-      Padding(
-        padding: const EdgeInsets.fromLTRB(19, 5, 30, 0),
-        child: SizedBox(
-          //width: 70,
-          child: TextField(
-            //controller: text_font_sizeController,
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(19, 10, 0, 0),
+          child: Text("Numar strofe:",
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 14,
+              )),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(19, 5, 30, 0),
+          child: SizedBox(
+            //width: 70,
+            child: TextField(
+              controller: totalNumLyricsController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+              ),
             ),
           ),
         ),
-      ),
-      Center(
-          child: Padding(
-        padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-        child: ElevatedButton(
-          onPressed: () {
-            Get.offAll(() => AddSongPage(), arguments: [
-              {"song_id": "not empty"},
-              {"current_step": 1}
-            ]);
-          },
-          child: Text("Pasul urmator"),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF3F63F1),
+        Center(
+            child: Padding(
+          padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+          child: ElevatedButton(
+            onPressed: () async {
+              if (widget.allowEdit == true) {
+                var response = await UpdateSongTitleService().updateSongTitle(widget.currentSongInfo.id.toString(), songTitleController.text, totalNumLyricsController.text);
+                if(response.statusCode==200){
+                  Get.offAll(() => AddSongPage(), arguments: [
+                    {"song_id": widget.currentSongInfo.id},
+                    {"current_step": 1}
+                  ]);
+                }else{
+                  Get.snackbar("Eroare", "A aparut o eroare la editarea melodiei!");
+                }
+    
+              } else {
+                var response = await addNewSong(
+                    songTitleController.text, totalNumLyricsController.text);
+                if (response != "error") {
+                  final data = jsonDecode(response);
+    
+                  Get.offAll(() => AddSongPage(), arguments: [
+                    {"song_id": data["_id"]},
+                    {"current_step": 1}
+                  ]);
+                }
+              }
+            },
+            child: Text("Pasul urmator"),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF3F63F1),
+            ),
           ),
-        ),
-      )),
-    ]);
+        )),
+      ]),
+    );
+  }
+}
+
+class AddVerseWidget extends StatefulWidget {
+  final bool allowEdit;
+  final SongSingle currentSongInfo;
+  final int currentStep;
+
+  const AddVerseWidget(
+      {super.key,
+      required this.allowEdit,
+      required this.currentSongInfo,
+      required this.currentStep});
+
+  @override
+  State<AddVerseWidget> createState() => _AddVerseWidgetState();
+}
+
+class _AddVerseWidgetState extends State<AddVerseWidget> {
+  String nextButtonTitle = "Pasul urmator";
+  final verseController = TextEditingController();
+  bool loaded = false;
+  bool isFirstRequest = true;
+
+  @override
+  void initState() {
+    flowExecutor();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    verseController.dispose();
+    super.dispose();
+  }
+
+  void flowExecutor() async {
+    if (widget.currentStep.toString() == widget.currentSongInfo.totalNumLyrics) {
+      nextButtonTitle = "Finalizare";
+      setState(() {});
+    }
+
+    bool response = await checkIfLyricsExist();
+    if (response == false) {
+        isFirstRequest = true;
+        setState((){loaded = true;} );
+      }
+      
+      if (response == true) {
+        getLyricsContent();
+        isFirstRequest = false;
+        setState((){loaded = true;} );
+      }
+      
+    }
+  
+
+  void getLyricsContent() async {
+    print("getLyricsContent");
+    var response = await PreviewOneVerseService().preview(widget.currentSongInfo.id.toString(), widget.currentStep.toString());
+                if (response.statusCode == 200) {
+                  final data = jsonDecode(response.body);
+                  verseController.text = data["lyrics_text"].toString();
+                  setState(() {
+                    loaded = true;
+                  });
+                }
+  }
+
+  Future<bool> addLyrics() async {
+    var response = await AddNewSong().addNewSong(widget.currentSongInfo.id.toString(), widget.currentStep, verseController.text);
+    if(response.statusCode==200){
+      return true;
+    }else{
+      Get.snackbar("Eroare", response.body);
+      return false;
+
+    }
+  }
+
+
+// there is a problem with this function. It always returns true, even if the lyrics already exist. Maybe there is a problem with the function which adds the new lyrics
+  Future<bool> checkIfLyricsExist() async {
+    var response = await PreviewOneVerseService().preview(widget.currentSongInfo.id, widget.currentStep.toString());
+                if (response.statusCode == 200) {
+
+                final data = jsonDecode(response.body);
+                print(data.length);
+                if(data.length==0){
+                  return false;
+                }else{
+                  return true;
+                }
+  }
+  return true;
+  }
+  
+
+  @override
+  Widget build(BuildContext context) {
+    return Visibility(
+      visible: loaded,
+      replacement: Center(child: CircularProgressIndicator()),
+      child: Column(
+        // ignore: prefer_const_literals_to_create_immutables
+        children: [
+          Text(widget.currentSongInfo.id),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(19, 10, 0, 0),
+            child: Text("Continut strofa " + widget.currentStep.toString(),
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 16,
+                )),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(19, 5, 30, 0),
+            child: TextField(
+              controller: verseController,
+              maxLines: 10,
+              minLines: 10,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ),
+          Center(
+              child: Padding(
+            padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+            child: ElevatedButton(
+              onPressed: () {
+                // open ocr page
+              },
+              child: Text("Adauga continut folosind camera"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color.fromARGB(255, 27, 197, 21),
+              ),
+            ),
+          )),
+          Divider(
+            color: Color.fromARGB(255, 88, 88, 88),
+            height: 20,
+            thickness: 1,
+          ),
+          Center(
+              child: Padding(
+            padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+            child: ElevatedButton(
+              onPressed: () {
+                // Get.offAll(() => AddSongPage(), arguments: [
+                //   {"song_id": "not empty"},
+                //   {"current_step": 1}
+                // ]);
+
+                if(isFirstRequest==true){
+                  addLyrics();
+
+                  if (widget.currentStep == int.parse(widget.currentSongInfo.totalNumLyrics)) {
+                  Get.offAll(() => HomePage());
+                } else {
+                  Get.offAll(() => AddSongPage(), arguments: [
+                    {"song_id": widget.currentSongInfo.id},
+                    {"current_step": widget.currentStep + 1}
+                  ]);
+                }
+                }else{
+                  //update lyrics
+
+                  if (widget.currentStep == int.parse(widget.currentSongInfo.totalNumLyrics)) {
+                  Get.offAll(() => HomePage());
+                } else {
+                  Get.offAll(() => AddSongPage(), arguments: [
+                    {"song_id": widget.currentSongInfo.id},
+                    {"current_step": widget.currentStep + 1}
+                  ]);
+                }
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF3F63F1),
+              ),
+              child: Text(nextButtonTitle),
+            ),
+          )),
+          Center(
+              child: Padding(
+            padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+            child: ElevatedButton(
+              onPressed: () {
+                Get.offAll(() => AddSongPage(), arguments: [
+                  {"song_id": widget.currentSongInfo.id},
+                  {"current_step": widget.currentStep - 1}
+                ]);
+              },
+              child: Text("Pasul anterior"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color.fromARGB(255, 241, 63, 72),
+              ),
+            ),
+          )),
+        ],
+      ),
+    );
   }
 }
