@@ -9,9 +9,9 @@ class AddNewSong {
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
     },
-    body: jsonEncode(<String, String>{
+    body: jsonEncode(<String, dynamic>{
       "lyrics_text": "$text_content",
-      "verse_number": verse_number.toString(),
+      "verse_number": verse_number,
     }),
   );
 }

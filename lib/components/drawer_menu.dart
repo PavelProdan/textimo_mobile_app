@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:textimo_mobile_app/views/reports.dart';
 import 'package:textimo_mobile_app/views/settings.dart';
-import 'package:textimo_mobile_app/views/ocr_concept.dart';
 import 'package:textimo_mobile_app/views/add_song.dart';
 import 'package:get/get.dart';
 
@@ -22,13 +21,7 @@ Drawer drawer_menu() {
                 image: AssetImage('assets/textimoLogo.png'),
               )),
         ),
-        ListTile(
-          leading: Icon(Icons.add_circle_outline),
-          title: Text('Ocr Concept'),
-          onTap: () {
-            Get.to(OcrPage());
-          },
-        ),
+        
         ListTile(
           leading: Icon(Icons.add_circle_outline),
           title: Text('Adaugă o piesă nouă'),
@@ -59,7 +52,7 @@ Drawer drawer_menu() {
           color: Color(0XFFCECECE),
         ),
         ListTile(
-          title: Text('Versiune aplicație: v1.0'),
+          title: Text('Versiune aplicație: v1.1'),
         ),
         Divider(
           height: 3,

@@ -59,7 +59,7 @@ class _EditWidgetState extends State<EditWidget> {
     var response = await UpdateSongTitleService().updateSongTitle(
         controller.songId!, editController.text, total_num_lyrics.toString());
     if (response.statusCode == 200) {
-      setState(() {});
+      //setState(() {});
       Get.snackbar(
         "Succes",
         "Datele au fost actualizate cu succes",

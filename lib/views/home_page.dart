@@ -8,7 +8,7 @@ import 'package:textimo_mobile_app/models/song_single.dart';
 import 'package:textimo_mobile_app/services/get_details_song_service.dart';
 import 'package:textimo_mobile_app/views/projector.dart';
 import 'package:textimo_mobile_app/views/preview.dart';
-import 'package:textimo_mobile_app/views/ocr_concept.dart';
+import 'package:textimo_mobile_app/views/ocr_page.dart';
 import 'package:textimo_mobile_app/views/edit.dart';
 import 'package:textimo_mobile_app/services/delete_song_service.dart';
 import 'package:get/get.dart';
@@ -252,12 +252,14 @@ class _HomePageState extends State<HomePage> {
                             buttonColor: Colors.red,
                             onConfirm: () async {
                               final response = await DeleteSongService().deleteSong(songs[index].id);
+                                Get.back();Navigator.of(context, rootNavigator: true).pop();
+
                               if(response.statusCode==200){
-                                Get.back();
+                                //Get.back();
                                 Get.snackbar("Succes", "Melodia a fost stearsa cu succes!");
                                 retrieveSongs(isRefresh: true);
                               }else{
-                                Get.back();
+                                //Get.back();
                                 Get.snackbar("Eroare", "A aparut o eroare la stergerea melodiei!");
                               }
                             },

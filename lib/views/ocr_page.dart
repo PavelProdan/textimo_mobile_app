@@ -4,38 +4,21 @@ import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
+import 'package:get/get.dart';
 
-
-class OcrPage extends StatelessWidget {
-  const OcrPage({Key? key}) : super(key: key);
-
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const MyHomePage(),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key}) : super(key: key);
+class OcrView extends StatefulWidget {
+  const OcrView({Key? key}) : super(key: key);
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<OcrView> createState() => _OcrViewState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _OcrViewState extends State<OcrView> {
   bool textScanning = false;
 
   XFile? imageFile;
   File? img;
   CroppedFile? croppedFile;
-
   String scannedText = "";
 
   @override
@@ -43,6 +26,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
+        backgroundColor: const Color(0xFF3F63F1),
         title: const Text("Adaugă versuri (OCR)"),
       ),
       body: Center(
@@ -68,8 +52,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         padding: const EdgeInsets.only(top: 10),
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            primary: Colors.white,
-                            onPrimary: Colors.grey,
+                            foregroundColor: Colors.grey, primary: Colors.white,
                             shadowColor: Colors.grey[400],
                             elevation: 10,
                             shape: RoundedRectangleBorder(
@@ -130,6 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               ],
                             ),
                           ),
+                          
                         )),
                   ],
                 ),
@@ -141,6 +125,21 @@ class _MyHomePageState extends State<MyHomePage> {
                     scannedText,
                     style: TextStyle(fontSize: 20),
                   ),
+                ),
+                Center(
+                        child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              foregroundColor: Colors.white,
+                              backgroundColor:
+                                  const Color(0xFF3F63F1), // foreground
+                            ),
+                            onPressed: () {
+                              Get.back(result: scannedText);
+                              
+                            },
+                            child: Text('Preia textul'))),
+                Center(
+                  child: Text("Eventualele greșeli pot fi corectate după preluarea textului. Pentru rezultate optime, va rugăm să încadrați poza astfel încât să fie vizibil doar textul dorit."),
                 )
               ],
             )),
@@ -172,7 +171,7 @@ class _MyHomePageState extends State<MyHomePage> {
     } catch (e) {
       textScanning = false;
       imageFile = null;
-	  scannedText = "Error occured while scanning";
+	  scannedText = "Eroare";
       setState(() {});
     }
   }

@@ -12,9 +12,12 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:textimo_mobile_app/services/delete_song_service.dart';
-import 'package:textimo_mobile_app/services/preview_one_verse_service.dart';
+//import 'package:textimo_mobile_app/services/preview_one_verse_service.dart';
+import 'package:textimo_mobile_app/services/preview_song_service.dart';
 import 'package:textimo_mobile_app/services/update_song_title.dart';
+import 'package:textimo_mobile_app/services/update_song_lyrics_service.dart';
 import 'package:textimo_mobile_app/views/home_page.dart';
+import 'package:textimo_mobile_app/views/ocr_page.dart';
 import 'package:textimo_mobile_app/models/song_single.dart';
 import 'package:textimo_mobile_app/services/get_details_song_service.dart';
 import 'package:textimo_mobile_app/services/add_new_song_service.dart';
@@ -87,10 +90,6 @@ class _AddSongPageState extends State<AddSongPage> {
     });
   }
 
-  void fetchSongVerse(String songId, int verseNumber) async {
-    //SongSingle song = await GetDetailsSongService().getSongDetails(songId);
-  }
-
   getParams() {
     songId = controller.songId;
     currentStep = controller.currentStep;
@@ -106,7 +105,7 @@ class _AddSongPageState extends State<AddSongPage> {
       deleteOnExit = true;
       showStep0 = false;
     }
-    if(songId!.length>6 && currentStep == 0){
+    if (songId!.length > 6 && currentStep == 0) {
       showStep0 = true;
       deleteOnExit = true;
     }
@@ -245,10 +244,11 @@ class _TitleWidgetState extends State<TitleWidget> {
     super.dispose();
   }
 
-  getTitleAndNumLyrics() async{
-    if(widget.currentSongInfo.id!=0){
-      SongSingle? response = await GetSongInfo().getSongInfo(widget.currentSongInfo.id.toString());
-      if(response!=null){
+  getTitleAndNumLyrics() async {
+    if (widget.currentSongInfo.id != 0) {
+      SongSingle? response =
+          await GetSongInfo().getSongInfo(widget.currentSongInfo.id.toString());
+      if (response != null) {
         songTitleController.text = response.songTitle;
         totalNumLyricsController.text = response.totalNumLyrics;
         setState(() {
@@ -257,7 +257,7 @@ class _TitleWidgetState extends State<TitleWidget> {
       }
     }
 
-    if(widget.currentSongInfo.id=="0"){
+    if (widget.currentSongInfo.id == "0") {
       setState(() {
         loaded = true;
       });
@@ -282,7 +282,6 @@ class _TitleWidgetState extends State<TitleWidget> {
       visible: loaded,
       replacement: Center(child: CircularProgressIndicator()),
       child: Column(children: <Widget>[
-        Text(widget.currentSongInfo.id),
         Padding(
           padding: const EdgeInsets.fromLTRB(19, 10, 0, 0),
           child: Text("Titlu melodie",
@@ -330,22 +329,25 @@ class _TitleWidgetState extends State<TitleWidget> {
           child: ElevatedButton(
             onPressed: () async {
               if (widget.allowEdit == true) {
-                var response = await UpdateSongTitleService().updateSongTitle(widget.currentSongInfo.id.toString(), songTitleController.text, totalNumLyricsController.text);
-                if(response.statusCode==200){
+                var response = await UpdateSongTitleService().updateSongTitle(
+                    widget.currentSongInfo.id.toString(),
+                    songTitleController.text,
+                    totalNumLyricsController.text);
+                if (response.statusCode == 200) {
                   Get.offAll(() => AddSongPage(), arguments: [
                     {"song_id": widget.currentSongInfo.id},
                     {"current_step": 1}
                   ]);
-                }else{
-                  Get.snackbar("Eroare", "A aparut o eroare la editarea melodiei!");
+                } else {
+                  Get.snackbar(
+                      "Eroare", "A aparut o eroare la editarea melodiei!");
                 }
-    
               } else {
                 var response = await addNewSong(
                     songTitleController.text, totalNumLyricsController.text);
                 if (response != "error") {
                   final data = jsonDecode(response);
-    
+
                   Get.offAll(() => AddSongPage(), arguments: [
                     {"song_id": data["_id"]},
                     {"current_step": 1}
@@ -398,66 +400,85 @@ class _AddVerseWidgetState extends State<AddVerseWidget> {
   }
 
   void flowExecutor() async {
-    if (widget.currentStep.toString() == widget.currentSongInfo.totalNumLyrics) {
+    if (widget.currentStep.toString() ==
+        widget.currentSongInfo.totalNumLyrics) {
       nextButtonTitle = "Finalizare";
       setState(() {});
     }
 
     bool response = await checkIfLyricsExist();
     if (response == false) {
-        isFirstRequest = true;
-        setState((){loaded = true;} );
-      }
-      
-      if (response == true) {
-        getLyricsContent();
-        isFirstRequest = false;
-        setState((){loaded = true;} );
-      }
-      
+      isFirstRequest = true;
+      setState(() {
+        loaded = true;
+      });
+    }else{
+      getLyricsContent();
+      isFirstRequest = false;
+      setState(() {
+        loaded = true;
+      });
     }
-  
+  }
 
   void getLyricsContent() async {
-    print("getLyricsContent");
-    var response = await PreviewOneVerseService().preview(widget.currentSongInfo.id.toString(), widget.currentStep.toString());
-                if (response.statusCode == 200) {
-                  final data = jsonDecode(response.body);
-                  verseController.text = data["lyrics_text"].toString();
-                  setState(() {
-                    loaded = true;
-                  });
-                }
+    var verseContent = await PreviewSongService().getPreviewSongInfo(
+        widget.currentSongInfo.id.toString(), widget.currentStep.toString());
+    if (verseContent != null) {
+      String current_verse = verseContent[0].lyricsText;
+      current_verse = current_verse.replaceAll("<br>", "\n");
+      verseController.text = current_verse;
+      setState(() {
+        loaded = true;
+      });
+    }
   }
 
   Future<bool> addLyrics() async {
-    var response = await AddNewSong().addNewSong(widget.currentSongInfo.id.toString(), widget.currentStep, verseController.text);
-    if(response.statusCode==200){
+    String current_verse = verseController.text;
+      current_verse = current_verse.replaceAll("\n", "<br>");
+    var response = await AddNewSong().addNewSong(
+        widget.currentSongInfo.id.toString(),
+        widget.currentStep,
+        current_verse);
+    if (response.statusCode == 200) {
       return true;
-    }else{
+    } else {
       Get.snackbar("Eroare", response.body);
       return false;
-
     }
   }
 
-
-// there is a problem with this function. It always returns true, even if the lyrics already exist. Maybe there is a problem with the function which adds the new lyrics
   Future<bool> checkIfLyricsExist() async {
-    var response = await PreviewOneVerseService().preview(widget.currentSongInfo.id, widget.currentStep.toString());
-                if (response.statusCode == 200) {
+    print(widget.currentSongInfo.id);
+    var verseContent = await PreviewSongService().getPreviewSongInfo(
+        widget.currentSongInfo.id.toString(), widget.currentStep.toString());
+    if (verseContent!.length == 0) {
+      return false;
+    } else {
+      return true;
+    }
+  }
 
-                final data = jsonDecode(response.body);
-                print(data.length);
-                if(data.length==0){
-                  return false;
-                }else{
-                  return true;
-                }
+  void updateLyrics() async{
+    String current_verse = verseController.text;
+    current_verse = current_verse.replaceAll("\n", "<br>");
+    var response = await UpdateSongLyricsService().updateSongLyrics(widget.currentSongInfo.id, widget.currentStep.toString(), current_verse);
+    if(response.statusCode == 200){
+    }else{
+      Get.snackbar("Eroare", response.body);
+    }
   }
-  return true;
+
+  void useOcr() async {
+    var data = await Get.to(OcrView());
+    print(data);
+    if(data==null){
+      verseController.text = "";
+    }else{
+      verseController.text = data;
+    }
   }
-  
 
   @override
   Widget build(BuildContext context) {
@@ -467,7 +488,6 @@ class _AddVerseWidgetState extends State<AddVerseWidget> {
       child: Column(
         // ignore: prefer_const_literals_to_create_immutables
         children: [
-          Text(widget.currentSongInfo.id),
           Padding(
             padding: const EdgeInsets.fromLTRB(19, 10, 0, 0),
             child: Text("Continut strofa " + widget.currentStep.toString(),
@@ -493,6 +513,7 @@ class _AddVerseWidgetState extends State<AddVerseWidget> {
             child: ElevatedButton(
               onPressed: () {
                 // open ocr page
+                useOcr();
               },
               child: Text("Adauga continut folosind camera"),
               style: ElevatedButton.styleFrom(
@@ -510,33 +531,32 @@ class _AddVerseWidgetState extends State<AddVerseWidget> {
             padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
             child: ElevatedButton(
               onPressed: () {
-                // Get.offAll(() => AddSongPage(), arguments: [
-                //   {"song_id": "not empty"},
-                //   {"current_step": 1}
-                // ]);
 
-                if(isFirstRequest==true){
+                if (isFirstRequest == true) {
                   addLyrics();
 
-                  if (widget.currentStep == int.parse(widget.currentSongInfo.totalNumLyrics)) {
-                  Get.offAll(() => HomePage());
+                  if (widget.currentStep ==
+                      int.parse(widget.currentSongInfo.totalNumLyrics)) {
+                    Get.offAll(() => HomePage());
+                  } else {
+                    Get.offAll(() => AddSongPage(), arguments: [
+                      {"song_id": widget.currentSongInfo.id},
+                      {"current_step": widget.currentStep + 1}
+                    ]);
+                  }
                 } else {
-                  Get.offAll(() => AddSongPage(), arguments: [
-                    {"song_id": widget.currentSongInfo.id},
-                    {"current_step": widget.currentStep + 1}
-                  ]);
-                }
-                }else{
                   //update lyrics
+                  updateLyrics();
 
-                  if (widget.currentStep == int.parse(widget.currentSongInfo.totalNumLyrics)) {
-                  Get.offAll(() => HomePage());
-                } else {
-                  Get.offAll(() => AddSongPage(), arguments: [
-                    {"song_id": widget.currentSongInfo.id},
-                    {"current_step": widget.currentStep + 1}
-                  ]);
-                }
+                  if (widget.currentStep ==
+                      int.parse(widget.currentSongInfo.totalNumLyrics)) {
+                    Get.offAll(() => HomePage());
+                  } else {
+                    Get.offAll(() => AddSongPage(), arguments: [
+                      {"song_id": widget.currentSongInfo.id},
+                      {"current_step": widget.currentStep + 1}
+                    ]);
+                  }
                 }
               },
               style: ElevatedButton.styleFrom(
@@ -550,10 +570,20 @@ class _AddVerseWidgetState extends State<AddVerseWidget> {
             padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
             child: ElevatedButton(
               onPressed: () {
+                if (isFirstRequest == true) {
+                  addLyrics();
                 Get.offAll(() => AddSongPage(), arguments: [
                   {"song_id": widget.currentSongInfo.id},
                   {"current_step": widget.currentStep - 1}
                 ]);
+                } else {
+                  //update lyrics
+                  updateLyrics();
+                  Get.offAll(() => AddSongPage(), arguments: [
+                  {"song_id": widget.currentSongInfo.id},
+                  {"current_step": widget.currentStep - 1}
+                ]);
+                }
               },
               child: Text("Pasul anterior"),
               style: ElevatedButton.styleFrom(
