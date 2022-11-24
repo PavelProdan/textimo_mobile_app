@@ -255,7 +255,7 @@ class _HomePageState extends State<HomePage> {
                                 Get.back();Navigator.of(context, rootNavigator: true).pop();
 
                               if(response.statusCode==200){
-                                //Get.back();
+                                Get.offAll(() => HomePage());
                                 Get.snackbar("Succes", "Melodia a fost stearsa cu succes!");
                                 retrieveSongs(isRefresh: true);
                               }else{

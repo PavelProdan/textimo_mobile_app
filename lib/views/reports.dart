@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:textimo_mobile_app/services/get_reports_service.dart';
+import 'package:textimo_mobile_app/services/update_report_status_service.dart';
 import 'package:textimo_mobile_app/services/get_details_song_service.dart';
 import 'package:textimo_mobile_app/models/view_reports_model.dart';
 
@@ -25,14 +26,13 @@ class _ReportsPageState extends State<ReportsPage> {
     getReports(dropdownValue);
   }
 
-
   getReports(String dropdownVal) async {
     if (dropdownVal == 'Raportări în lucru') {
       var response = await GetAllReports().getAllReports();
       if (response != null) {
-        for(int i=0; i<response.length; i++) {
+        for (int i = 0; i < response.length; i++) {
           var song_name = await GetSongInfo().getSongInfo(response[i].songId);
-          if(song_name!=null){
+          if (song_name != null) {
             response[i].songId = song_name.songTitle;
           }
         }
@@ -57,6 +57,17 @@ class _ReportsPageState extends State<ReportsPage> {
     } else {
       return false;
     }
+  }
+
+  void updateReport(String reportId) async {
+    var response = await UpdateReportService().updateReportStatus(reportId);
+    if(response.statusCode == 200){
+      Get.snackbar("Succes!", "Raportul a fost marcat ca rezolvat.");
+      getReports(dropdownValue);
+    } else {
+      Get.snackbar("Atentie!", "Se pare ca a aparut o eroare.");
+    }
+
   }
 
   @override
@@ -112,31 +123,54 @@ class _ReportsPageState extends State<ReportsPage> {
                         child: Column(
                           children: <Widget>[
                             Row(
-                              
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     // ignore: prefer_const_literals_to_create_immutables
                                     children: <Widget>[
                                       Padding(
-                                        padding: const EdgeInsets.fromLTRB(12.0, 5.0, 5.0, 4.0),
+                                        padding: const EdgeInsets.fromLTRB(
+                                            12.0, 5.0, 5.0, 4.0),
                                         child: Text(
-                                          reports[index].songId+", strofa "+reports[index].verseNumber,
-                                          
+                                          reports[index].songId +
+                                              ", strofa " +
+                                              reports[index].verseNumber,
                                           style: TextStyle(
                                               fontSize: 16.0,
                                               fontWeight: FontWeight.bold),
                                         ),
                                       ),
-                                      Padding(
-                                        padding: const EdgeInsets.fromLTRB(12.0, 5.0, 5.0, 4.0),
-                                        child: Text(
-                                          reports[index].reportText,
-                                          style: TextStyle(fontSize: 18.0),
-                                        ),
-                                      ),
+                                      GestureDetector(
+                                          onLongPress: () => {
+                                                Get.defaultDialog(
+                                                    title: 'Actualizare status '+reports[index].songId,
+                                                    middleText:
+                                                        "Esti sigur ca vrei sa marchezi ca rezolvat?",
+                                                    textConfirm: "Da",
+                                                    textCancel: "Nu",
+                                                    confirmTextColor:
+                                                        Colors.white,
+                                                    cancelTextColor:
+                                                        Colors.black,
+                                                    buttonColor: Colors.red,
+                                                    onConfirm: () async {
+                                                      updateReport(reports[index].id);
+                                                      Navigator.pop(context);
+                                                    },
+                                                    onCancel: () {
+                                                    })
+                                              },
+                                          child: Padding(
+                                            padding: const EdgeInsets.fromLTRB(
+                                                12.0, 5.0, 5.0, 4.0),
+                                            child: Text(
+                                              reports[index].reportText,
+                                              style: TextStyle(fontSize: 18.0),
+                                            ),
+                                          )),
                                     ],
                                   ),
                                 ),
@@ -178,4 +212,3 @@ class _ReportsPageState extends State<ReportsPage> {
     );
   }
 }
-
