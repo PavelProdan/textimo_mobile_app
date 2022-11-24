@@ -46,19 +46,21 @@ class _HomePageState extends State<HomePage> {
     nowPlayingSong = await GetNowPlayingSong().getNowPlayingSong();
     if (nowPlayingSong != null) {
       if (nowPlayingSong?.songId == "0") {
-        
         is_now_playing_btn_visible = false;
-        if(mounted){setState(() {});}
+        if (mounted) {
+          setState(() {});
+        }
       } else {
         nowPlayingSongInfo =
             await GetSongInfo().getSongInfo(nowPlayingSong!.songId);
         if (nowPlayingSongInfo != null) {
-          
-            now_playing_song_title = nowPlayingSongInfo!.songTitle;
-            now_playing_song_verse_number = nowPlayingSong!.verseNumber;
-            now_playing_songId = nowPlayingSong!.songId;
-            is_now_playing_btn_visible = true;
-          if(mounted){setState(() {});}
+          now_playing_song_title = nowPlayingSongInfo!.songTitle;
+          now_playing_song_verse_number = nowPlayingSong!.verseNumber;
+          now_playing_songId = nowPlayingSong!.songId;
+          is_now_playing_btn_visible = true;
+          if (mounted) {
+            setState(() {});
+          }
         }
       }
     }
@@ -83,7 +85,9 @@ class _HomePageState extends State<HomePage> {
       }
       offset = offset + limit;
 
-      if(mounted){setState(() {});}
+      if (mounted) {
+        setState(() {});
+      }
       return true;
     } else {
       return false;
@@ -117,7 +121,7 @@ class _HomePageState extends State<HomePage> {
                 showSearch(
                   context: context,
                   delegate: SearchSongDelegate(),
-                  );
+                );
               } //showDialogTest(context),
 
               ),
@@ -183,23 +187,52 @@ class _HomePageState extends State<HomePage> {
                 child: ListTile(
                   title: InkWell(
                     onTap: () async {
-                      // open projector page method
-                      String local_verse_number = "1";
                       if (is_now_playing_btn_visible) {
-                        if (now_playing_songId == songs[index].id) {
-                          local_verse_number = now_playing_song_verse_number;
+                        Get.defaultDialog(
+                            title: 'Atentie!',
+                            middleText:
+                                "O melodie este deja Live. Doresti sa continui?",
+                            textConfirm: "Da",
+                            textCancel: "Nu",
+                            confirmTextColor: Colors.white,
+                            cancelTextColor: Colors.black,
+                            buttonColor: const Color(0xFF3F63F1),
+                            onConfirm: () async {
+                              String local_verse_number = "1";
+                              if (is_now_playing_btn_visible) {
+                                if (now_playing_songId == songs[index].id) {
+                                  local_verse_number =
+                                      now_playing_song_verse_number;
+                                }
+                              }
+                              var data = await Get.to(() => ProjectorWidget(),
+                                  arguments: [
+                                    {"song_id": songs[index].id},
+                                    {"verse_number": local_verse_number}
+                                  ]);
+
+                              if (data == "require_refresh") {
+                                getNowPlayingSong();
+                              }
+                            },
+                            onCancel: () {});
+                      } else {
+                        String local_verse_number = "1";
+                        if (is_now_playing_btn_visible) {
+                          if (now_playing_songId == songs[index].id) {
+                            local_verse_number = now_playing_song_verse_number;
+                          }
+                        }
+                        var data =
+                            await Get.to(() => ProjectorWidget(), arguments: [
+                          {"song_id": songs[index].id},
+                          {"verse_number": local_verse_number}
+                        ]);
+
+                        if (data == "require_refresh") {
+                          getNowPlayingSong();
                         }
                       }
-                      var data =
-                          await Get.to(() => ProjectorWidget(), arguments: [
-                        {"song_id": songs[index].id},
-                        {"verse_number": local_verse_number}
-                      ]);
-
-                      if (data == "require_refresh") {
-                        getNowPlayingSong();
-                      }
-                      // end of open projector page method
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(13.0),
@@ -209,7 +242,6 @@ class _HomePageState extends State<HomePage> {
                   trailing: PopupMenuButton<String>(
                     onSelected: (String value) async {
                       if (value == "Afiseaza") {
-
                         // open projector page method
                         String local_verse_number = "1";
                         if (is_now_playing_btn_visible) {
@@ -229,38 +261,43 @@ class _HomePageState extends State<HomePage> {
                         // end of projector page method
 
                       }
-                      if(value=="Previzualizeaza"){
+                      if (value == "Previzualizeaza") {
                         Get.to(() => PreviewWidget(), arguments: [
                           {"song_id": songs[index].id},
                         ]);
                       }
 
-                      if(value=="Modifica"){
+                      if (value == "Modifica") {
                         Get.to(() => EditWidget(), arguments: [
                           {"song_id": songs[index].id},
                         ]);
                       }
 
-                      if(value=="Sterge"){
+                      if (value == "Sterge") {
                         Get.defaultDialog(
-                            title: 'Sterge "'+songs[index].songTitle+'"',
-                            middleText: "Esti sigur ca vrei sa stergi aceasta melodie?",
+                            title: 'Sterge "' + songs[index].songTitle + '"',
+                            middleText:
+                                "Esti sigur ca vrei sa stergi aceasta melodie?",
                             textConfirm: "Da",
                             textCancel: "Nu",
                             confirmTextColor: Colors.white,
                             cancelTextColor: Colors.black,
                             buttonColor: Colors.red,
                             onConfirm: () async {
-                              final response = await DeleteSongService().deleteSong(songs[index].id);
-                                Get.back();Navigator.of(context, rootNavigator: true).pop();
+                              final response = await DeleteSongService()
+                                  .deleteSong(songs[index].id);
+                              Get.back();
+                              Navigator.of(context, rootNavigator: true).pop();
 
-                              if(response.statusCode==200){
+                              if (response.statusCode == 200) {
                                 Get.offAll(() => HomePage());
-                                Get.snackbar("Succes", "Melodia a fost stearsa cu succes!");
+                                Get.snackbar("Succes",
+                                    "Melodia a fost stearsa cu succes!");
                                 retrieveSongs(isRefresh: true);
-                              }else{
+                              } else {
                                 //Get.back();
-                                Get.snackbar("Eroare", "A aparut o eroare la stergerea melodiei!");
+                                Get.snackbar("Eroare",
+                                    "A aparut o eroare la stergerea melodiei!");
                               }
                             },
                             onCancel: () {
@@ -295,4 +332,3 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
-
