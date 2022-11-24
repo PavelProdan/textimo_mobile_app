@@ -52,7 +52,7 @@ class _CheckConnectionWidgetState extends State<CheckConnectionWidget> {
                 CircularProgressIndicator(),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text("Se verifica conexiunea..."),
+                  child: Text("Se verifică conexiunea..."),
                 ),
               ],
             ),

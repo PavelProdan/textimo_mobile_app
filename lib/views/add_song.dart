@@ -304,7 +304,7 @@ class _TitleWidgetState extends State<TitleWidget> {
         ),
         Padding(
           padding: const EdgeInsets.fromLTRB(19, 10, 0, 0),
-          child: Text("Numar strofe:",
+          child: Text("Număr strofe:",
               style: TextStyle(
                 color: Colors.black,
                 fontSize: 14,
@@ -355,7 +355,7 @@ class _TitleWidgetState extends State<TitleWidget> {
                 }
               }
             },
-            child: Text("Pasul urmator"),
+            child: Text("Pasul următor"),
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF3F63F1),
             ),
@@ -382,7 +382,7 @@ class AddVerseWidget extends StatefulWidget {
 }
 
 class _AddVerseWidgetState extends State<AddVerseWidget> {
-  String nextButtonTitle = "Pasul urmator";
+  String nextButtonTitle = "Pasul următor";
   final verseController = TextEditingController();
   bool loaded = false;
   bool isFirstRequest = true;
@@ -490,7 +490,7 @@ class _AddVerseWidgetState extends State<AddVerseWidget> {
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(19, 10, 0, 0),
-            child: Text("Continut strofa " + widget.currentStep.toString(),
+            child: Text("Conținut strofă " + widget.currentStep.toString(),
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 16,
@@ -515,7 +515,7 @@ class _AddVerseWidgetState extends State<AddVerseWidget> {
                 // open ocr page
                 useOcr();
               },
-              child: Text("Adauga continut folosind camera"),
+              child: Text("Adaugă conținut folosind camera"),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color.fromARGB(255, 27, 197, 21),
               ),

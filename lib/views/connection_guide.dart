@@ -13,7 +13,7 @@ class StepperWidget extends StatefulWidget {
 class _StepperWidgetState extends State<StepperWidget> {
   int _index = 0;
   String textButonNext = 'Am dezactivat Datele Mobile';
-  String textButonBack = 'Inapoi';
+  String textButonBack = 'Înapoi';
   var showBackButton = false;
   var showNextButton = true;
   var showsubmitButton = false;
@@ -47,7 +47,7 @@ class _StepperWidgetState extends State<StepperWidget> {
               child: TextButton(
                 onPressed: _.onStepCancel,
                 child: const Text(
-                  'Inapoi',
+                  'Înapoi',
                   style: TextStyle(color: Colors.blue),
                 ),
               ),
@@ -81,7 +81,7 @@ class _StepperWidgetState extends State<StepperWidget> {
           content: Container(
               alignment: Alignment.centerLeft,
               child: const Text(
-                '1) Dezactiveaza Datele Mobile',
+                '1) Dezactivează Datele Mobile',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               )),
         ),
@@ -94,7 +94,7 @@ class _StepperWidgetState extends State<StepperWidget> {
                   children: <Widget>[
                     // ignore: prefer_const_constructors
                     Text(
-                      '2) Conecteaza-te la reteaua WiFi "textimo"',
+                      '2) Conectează-te la rețeaua WiFi "textimo"',
                       style:
                           // ignore: prefer_const_constructors
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
@@ -103,7 +103,7 @@ class _StepperWidgetState extends State<StepperWidget> {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: const Text(
-                        'Reteaua WiFi "textimo" nu apare? Verifica daca dispozitivul RaspberryPi este pornit de cel putin 1 minut.',
+                        'Rețeaua WiFi "textimo" nu apare? Verifică dacă dispozitivul RaspberryPi este pornit de cel puțin 1 minut.',
                         style: TextStyle(fontSize: 16),
                       ),
                     ),
@@ -164,7 +164,7 @@ class _ConnectionGuideState extends State<ConnectionGuide> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                'Se pare ca nu esti conectat la dispozitivul Textimo. Te rugam sa urmeazi pasii de mai jos pentru a te conecta.',
+                'Se pare că nu esti conectat la dispozitivul Textimo. Te rugăm să urmezi pasii de mai jos pentru a te conecta.',
                 style:
                     // ignore: prefer_const_constructors
                     TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
@@ -176,7 +176,7 @@ class _ConnectionGuideState extends State<ConnectionGuide> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                'Atentie! Este posibil sa primesti un mesaj de tipul "Acest WiFi nu are acces la internet". Este important sa pastrezi conexiunea cu WiFi-ul Textimo pentru a putea folosi aplicatia.',
+                'Atentie! Este posibil să primesti un mesaj de tipul "Acest WiFi nu are acces la internet". Este important să pastrezi conexiunea cu WiFi-ul Textimo pentru a putea folosi aplicatia.',
                 style:
                     // ignore: prefer_const_constructors
                     TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
