@@ -1,3 +1,3 @@
 library config;
 
-var textimo_ip = "http://192.168.137.1:3000";
+var textimo_ip = "http://172.24.1.1:3000";
