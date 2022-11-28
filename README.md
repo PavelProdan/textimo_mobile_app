@@ -39,7 +39,9 @@ View https://github.com/PavelProdan/textimo_backend
 
 ## How to use Textimo Mobile App
 -Download the latest .apk release and install the app
+
 Or
+
 -Clone the *main* branch and run ```dart pub get```
 
 ## Contributing
