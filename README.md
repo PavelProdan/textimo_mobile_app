@@ -25,3 +25,41 @@ Textimo uses two services:
 - **Textimo Backend Server:**  it's a NodeJS App that runs in the background on the Raspberry Pi and a Full Screen Sandbox Chromium Window that is displayed on the external screen via HDMI (projector or display) on startup. Raspberry Pi runs the light versions (without desktop) edition of Raspbian (Stretch), and uses Xorg display manager to display only the Chromium window. 
 
 - **Textimo Mobile App:** a Flutter app that uses Textimo Server REST API to control everything. The app connects to the Raspberry PI using the WiFi hotspot created by the Raspberry itself. 
+
+## Features
+
+- Budget solution for a chorus that needs to display some live lyrics using a standalone system
+- You can costumize the LivePage from the app
+- You can add songs and lyrics using camera (OCR)
+- You can control what verse is being shown on the LivePage
+- Swagger REST API documentation at /api-docs route
+
+## How to install Textimo Server on Raspberry
+View https://github.com/PavelProdan/textimo_backend
+
+## How to use Textimo Mobile App
+-Download the latest .apk release and install the app
+Or
+-Clone the *main* branch and run ```dart pub get```
+
+## Contributing
+
+Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are greatly appreciated.
+
+If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the **Label "Feature request"**. Don't forget to give the project a star! Thanks again!
+
+1. Fork the Project
+2. Create your Feature Branch (```git checkout -b feature/AmazingFeature```)
+3. Commit your Changes (```git commit -m 'Add some AmazingFeature'```)
+4. Push to the Branch (```git push origin feature/AmazingFeature```)
+5. Open a Pull Request
+
+## License
+Distributed under the GNU GPLv3 License. See ```LICENSE.txt``` for more information.
+
+[GNU GPLv3](https://choosealicense.com/licenses/gpl-3.0/)
+
+-------------------
+Created with ❤️ by Pavel Prodan in 2022
+
+
